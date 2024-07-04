@@ -52,6 +52,7 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
                         npm install jwt-decode
+                        npm install js-cookie
                         cd ${env.FRONTEND_PATH} &&
                         sudo npm run build
                         "
