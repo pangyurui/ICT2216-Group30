@@ -1,0 +1,82 @@
+.shopTitle {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 3rem;
+  color: #333;
+  font-weight: bold;
+}
+
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+  padding: 20px;
+  justify-content: center;
+}
+
+.product {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  width: 100%;
+  margin: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.3s ease-in-out;
+}
+
+.product img {
+  width: 100%;
+  height: auto;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.product .description {
+  padding: 15px;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.product:hover {
+  transform: scale(1.03);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+}
+
+.addToCartBttn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease-in;
+  margin-top: 10px;
+}
+
+.addToCartBttn:hover {
+  background-color: #367C2B;
+}
+
+.view-organisations {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.view-organisations-button {
+  background-color: #008CBA;
+  border: none;
+  color: white;
+  padding: 12px 28px;
+  font-size: 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+}
+
+.view-organisations-button:hover {
+  background-color: #007BAA;
+}
