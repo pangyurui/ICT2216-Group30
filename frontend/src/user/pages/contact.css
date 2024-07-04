@@ -1,0 +1,32 @@
+/* contact.css */
+.contact-container {
+    width: 100%;
+    max-width: 800px; /* Adjusted width for better reading on larger screens */
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #ffffff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    font-family: Arial, sans-serif; /* Optional: Sets a default font for the container */
+}
+
+.contact-container h1 {
+    font-size: 2.5rem; /* Larger font size for the heading */
+    color: #333;
+    margin-bottom: 1rem; /* Adds space below the heading */
+}
+
+.contact-container p {
+    font-size: 1.2rem; /* Larger font size for the paragraph */
+    line-height: 1.6; /* Increased line height for better readability */
+    color: #666; /* Soften the text color for easier reading */
+}
+
+.contact-container a {
+    color: #0056b3; /* Theme color for links */
+    text-decoration: none; /* Removes underline from links */
+}
+
+.contact-container a:hover {
+    text-decoration: underline; /* Adds underline on hover for better interaction visibility */
+}
