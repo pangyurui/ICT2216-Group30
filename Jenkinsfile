@@ -51,8 +51,7 @@ pipeline {
                 sshagent([env.SSH_CREDENTIALS]) {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
-                        npm install jwt-decode
-                        npm install js-cookie
+                        npm install jwt-decode js-cookie qrcode.react
                         cd ${env.FRONTEND_PATH} &&
                         sudo npm run build
                         "
