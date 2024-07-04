@@ -61,6 +61,8 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(username, email, password, **extra_fields)
 
 class User(AbstractBaseUser):
+
+    current_session_token = models.CharField(max_length=255, null=True, blank=True)
     username = models.CharField(max_length=255, unique=True)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=255)
@@ -106,6 +108,8 @@ class UserAddress(models.Model):
     modified_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
 
+    session_token = models.CharField(max_length=255, null=True, blank=True)
+
     def __str__(self):
         return f"{self.address_line1}, {self.city}, {self.country}"
     
@@ -142,15 +146,6 @@ class Organisation(models.Model):
     def __str__(self):
         return self.name
 
-class ProductCategory(models.Model):
-    name = models.CharField(max_length=255)
-    created_at = models.DateTimeField(auto_now_add=True)
-    modified_at = models.DateTimeField(auto_now=True)
-    deleted_at = models.DateTimeField(null=True, blank=True)
-
-    def __str__(self):
-        return self.name
-
 class Product(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
@@ -159,7 +154,6 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
-    category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE, related_name='products')
     organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE, related_name='orgs', default=1)
 
     def __str__(self):

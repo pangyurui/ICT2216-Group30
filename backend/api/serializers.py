@@ -1,14 +1,9 @@
-from abc import ABC
-
-import pyotp
-import qrcode
-
 from rest_framework import serializers
-from .models import Product, CartItem, Cart, Organisation, User, ProductCategory, ProductReview, \
+from .models import Product, CartItem, Cart, Organisation, User, ProductReview, \
     UserPayment, UserAddress
+import pyotp
 import os
 import hashlib
-from django.db.utils import IntegrityError
 import datetime
 
 
@@ -99,13 +94,6 @@ class LoginSerializer(serializers.Serializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    category_id = serializers.PrimaryKeyRelatedField(
-        queryset=ProductCategory.objects.all(),
-        source='category',
-        write_only=False,
-        required=False,  # If not always required
-        allow_null=True,  # If null is allowed
-    )
     organisation_id = serializers.PrimaryKeyRelatedField(
         queryset=Organisation.objects.all(),
         source='organisation',
@@ -117,15 +105,14 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = (
-            'id', 'name', 'description', 'price', 'image', 'category_id', 'organisation_id', 'created_at',
+            'id', 'name', 'description', 'price', 'image', 'organisation_id', 'created_at',
             'modified_at',
             'deleted_at')
 
     def create(self, validated_data):
         # Extracting and handling the relationships separately if needed
-        category = validated_data.pop('category', None)
         organisation = validated_data.pop('organisation', None)
-        product = Product.objects.create(category=category, organisation=organisation, **validated_data)
+        product = Product.objects.create(organisation=organisation, **validated_data)
         return product
 
     def update(self, instance, validated_data):
@@ -133,7 +120,6 @@ class ProductSerializer(serializers.ModelSerializer):
         instance.name = validated_data.get('name', instance.name)
         instance.description = validated_data.get('description', instance.description)
         instance.price = validated_data.get('price', instance.price)
-        instance.category = validated_data.get('category', instance.category)
         instance.organisation = validated_data.get('organisation', instance.organisation)
         instance.save()
         return instance
@@ -174,12 +160,6 @@ class CartSerializer(serializers.ModelSerializer):
 class OrganisationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organisation
-        fields = '__all__'
-
-
-class ProductCategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductCategory
         fields = '__all__'
 
 

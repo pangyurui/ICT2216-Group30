@@ -1,4 +1,3 @@
-import pyotp
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -6,47 +5,113 @@ from rest_framework.exceptions import AuthenticationFailed, NotFound
 from rest_framework.views import APIView
 from rest_framework import generics, status, permissions
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import status
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from django.db import transaction, connection, IntegrityError
-from .models import Product, Cart, CartItem, Organisation, User, ProductCategory, ProductReview, \
-    UserPayment, UserAddress, Organisation
+from django.db import transaction, IntegrityError
+from .models import Product, Cart, CartItem, Organisation, User, ProductReview
+
+from django.db import transaction
+from .models import Product, Cart, CartItem, Organisation, User, ProductReview, \
+    UserPayment, UserAddress
 from .serializers import ProductSerializer, CartItemSerializer, CartSerializer, \
-    OrganisationSerializer, UserSerializer, LoginSerializer, ProductCategorySerializer, \
+    OrganisationSerializer, UserSerializer, LoginSerializer, \
     UserUpdateSerializer, ProductReviewSerializer, TwoFactorLoginVerification, \
     UserPaymentSerializer, UserAddressSerializer
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from django.http import JsonResponse
-import os, json
 from django.views.decorators.csrf import csrf_exempt
-
-from django.contrib.auth import get_user_model
-
-
-
-from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
-from .models import User
-
-import logging
 from logger import logging_library
-
-from django.db import IntegrityError
 from django.core.files.storage import default_storage
-
-from .models import Product
-from .serializers import ProductSerializer
-
 from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser
+from django_ratelimit.decorators import ratelimit
+import pyotp
+import logging
 
 logger = logging.getLogger(__name__)
 
 from django_ratelimit.decorators import ratelimit
 from django.utils.decorators import method_decorator
+from rest_framework_simplejwt.authentication import JWTAuthentication
+import re
+from rest_framework.exceptions import ValidationError
+import requests
+
+
+import jwt
+from django.conf import settings
+from django.contrib.auth import authenticate
+import os
 
 @api_view(['GET'])
 def hello_world(request):
     return Response({'message': 'Hello, world!'})
+
+@ensure_csrf_cookie
+@csrf_exempt
+@require_http_methods(["GET", "OPTIONS"])
+def get_csrf_token(request):
+    return JsonResponse({'detail': 'CSRF cookie set'})
+
+@csrf_exempt
+def OrganisationCreateView(request):
+    if request.method == 'POST':
+
+        # Authentication
+        jwt_authenticator = JWTAuthentication()
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            return JsonResponse({'detail': 'Authorization header is missing'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            token_str = auth_header.split()[1]
+            validated_token = jwt_authenticator.get_validated_token(token_str)
+            is_super_user = validated_token.get('is_superuser')
+            if not is_super_user:
+                return JsonResponse({'detail': 'You cannot perform this action'}, status=status.HTTP_403_FORBIDDEN)
+
+            # Parse multipart form data
+            data = request.POST
+            files = request.FILES
+
+            serializer = OrganisationSerializer(data=data)
+            if serializer.is_valid():
+                # Handle the file upload
+                org_name = data.get('name')
+                org_desc = data.get('desc')
+                org_image = files.get('image')
+                org_createdat = data.get('created_at')
+                org_modifiedat = data.get('modified_at')
+
+                # Save the file if it's provided
+                if org_image:
+                    organisation = Organisation(
+                        name=org_name,
+                        desc=org_desc,
+                        image=org_image,
+                        created_at=org_createdat,
+                        modified_at=org_modifiedat
+                    )
+                else:
+                    organisation = Organisation(
+                        name=org_name,
+                        desc=org_desc,
+                        created_at=org_createdat,
+                        modified_at=org_modifiedat
+                    )
+
+                try:
+                    organisation.save()
+                    return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+                except IntegrityError as e:
+                    return JsonResponse({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except (User.DoesNotExist, IndexError, KeyError) as e:
+            return JsonResponse({'detail': 'Invalid token or user not found'}, status=status.HTTP_401_UNAUTHORIZED)
+    else:
+        return JsonResponse({'detail': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 # Read User
@@ -113,12 +178,11 @@ class UserAddressRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView
     def get_queryset(self):
         return UserAddress.objects.filter(user=self.request.user)
 
-
-
 class UserList(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+@method_decorator(csrf_protect, name='post')
 class LogoutView(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
 
@@ -131,16 +195,32 @@ class LogoutView(generics.GenericAPIView):
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-
+@method_decorator(csrf_protect, name='post')
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
-    @method_decorator(ratelimit(key='ip', rate='5/m', method='POST'), name='post') #rate limit
 
+    @method_decorator(ratelimit(key='ip', rate='5/m', method='POST'), name='dispatch')
     def post(self, request, *args, **kwargs):
+        try:
+            sanitized_data = self.sanitize_and_validate_data(request.data)
+        except ValidationError as e:
+            return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
         # serializer = self.get_serializer(data=request.data)
-        serializer = LoginSerializer(data=request.data)
+        serializer = LoginSerializer(data=sanitized_data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
+
+        username = request.data.get('username')
+        password = request.data.get('password')
+        user = authenticate(username=username, password=password)
+        if not user:
+            return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        # Generate a new session token
+        session_token = jwt.encode({'username': user.username}, settings.SECRET_KEY, algorithm='HS256')
+        user.session_token = session_token
+        user.save()
 
         refresh = RefreshToken.for_user(user)
         access_token = refresh.access_token
@@ -156,16 +236,135 @@ class LoginView(generics.GenericAPIView):
             "is_superuser": user.is_superuser
         })
 
+    def sanitize_input(self, input):
+        input = re.sub(r'<script.*?>.*?</script>', '', input, flags=re.IGNORECASE)  # Remove script tags
+        input = re.sub(r'<[^>]+>', '', input)  # Remove all HTML tags
+        input = input.replace('"', '')  # Remove double quotes
+        input = input.replace("'", '')  # Remove single quotes
+        return input.strip()  # Remove whitespace from both ends
 
+
+    def validate_length(self, input, field_name, max_length):
+        if len(input) > max_length:
+            raise ValidationError(f"{field_name} must not exceed {max_length} characters.")
+        return input
+
+    def validate_username(self, username):
+        username = username.strip()
+        if len(username) == 0:
+            raise ValidationError("Username is required.")
+        return self.validate_length(username, 'Username', 255)
+
+    def validate_password(self, password):
+        if len(password) == 0:
+            raise ValidationError("Password is required.")
+        return self.validate_length(password, 'Password', 255)
+
+    def validate_otp(self, otp):
+        otp = otp.strip()
+        if len(otp) == 0:
+            raise ValidationError("OTP Password is required.")
+        if len(otp) != 6:
+            raise ValidationError("OTP Password must be exactly 6 characters long.")
+        return otp
+
+    def sanitize_and_validate_data(self, data):
+        sanitized_data = {}
+        sanitized_data['username'] = self.sanitize_input(data.get('username', ''))
+        sanitized_data['password'] = self.sanitize_input(data.get('password', ''))
+        sanitized_data['otp'] = self.sanitize_input(data.get('otp', ''))
+
+        sanitized_data['username'] = self.validate_username(sanitized_data['username'])
+        sanitized_data['password'] = self.validate_password(sanitized_data['password'])
+        sanitized_data['otp'] = self.validate_otp(sanitized_data['otp'])
+
+        return sanitized_data
+    
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+    def sanitize_input(self, input):
+        input = re.sub(r'<script.*?>.*?</script>', '', input, flags=re.IGNORECASE)  # Remove script tags
+        input = re.sub(r'<[^>]+>', '', input)  # Remove all HTML tags
+        input = input.replace('"', '')  # Remove double quotes
+        input = input.replace("'", '')  # Remove single quotes
+        return input.strip()  # Remove whitespace from both ends
+
+    def validate_length(self, input, field_name):
+        if len(input) > 255:
+            raise ValidationError(f"{field_name} must not exceed 255 characters.")
+        return input
+
+    def validate_username(self, username):
+        username = username.strip()
+        if len(username) == 0:
+            raise ValidationError("Username is required.")
+        if len(username) < 3:
+            raise ValidationError("Username must be at least 3 characters long.")
+        return self.validate_length(username, 'Username')
+
+    def validate_email(self, email):
+        email = email.strip()
+        email_regex = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
+        if len(email) == 0:
+            raise ValidationError("Email is required.")
+        if not email_regex.match(email):
+            raise ValidationError("Invalid email format.")
+        return self.validate_length(email, 'Email')
+
+    def validate_password(self, password):
+        if len(password) < 8:
+            raise ValidationError("Password must be at least 8 characters long.")
+        common_passwords = self.get_common_passwords()
+        if password in common_passwords:
+            raise ValidationError("Password is too common. Please choose a more secure password.")
+        return self.validate_length(password, 'Password')
+
+    def validate_name(self, name, field_name):
+        name = name.strip()
+        if len(name) == 0:
+            raise ValidationError(f"{field_name} is required.")
+        if len(name) < 2:
+            raise ValidationError(f"{field_name} must be at least 2 characters long.")
+        return self.validate_length(name, field_name)
+
+    def get_common_passwords(self):
+        try:
+            response = requests.get('http://127.0.0.1:8000/api/common-passwords/')
+            response.raise_for_status()  # Will raise an HTTPError for bad responses
+            return response.json()
+        except requests.RequestException as e:
+            logging.error(f"Error fetching common passwords: {e}")
+            return []
+
+    def sanitize_and_validate_data(self, data):
+        sanitized_data = {}
+        sanitized_data['username'] = self.sanitize_input(data.get('username'))
+        sanitized_data['email'] = self.sanitize_input(data.get('email'))
+        sanitized_data['password'] = self.sanitize_input(data.get('password'))
+        sanitized_data['first_name'] = self.sanitize_input(data.get('first_name'))
+        sanitized_data['last_name'] = self.sanitize_input(data.get('last_name'))
+
+        sanitized_data['username'] = self.validate_username(sanitized_data['username'])
+        sanitized_data['email'] = self.validate_email(sanitized_data['email'])
+        sanitized_data['password'] = self.validate_password(sanitized_data['password'])
+        sanitized_data['first_name'] = self.validate_name(sanitized_data['first_name'], 'First Name')
+        sanitized_data['last_name'] = self.validate_name(sanitized_data['last_name'], 'Last Name')
+
+        return sanitized_data
+
+    @method_decorator(csrf_protect)
     def create(self, request, *args, **kwargs):
-        print(request.data)
-        logging_library.log_access_register(request, "register")
+        logging.info("Access register")
+        
+        try:
+            sanitized_data = self.sanitize_and_validate_data(request.data)
+        except ValidationError as e:
+            return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
         with transaction.atomic():
-            serializer = self.get_serializer(data=request.data)
+            serializer = self.get_serializer(data=sanitized_data)
             serializer.is_valid(raise_exception=True)
             user = serializer.save()
             Cart.objects.create(user=user)
@@ -202,6 +401,7 @@ class CartItemListCreateView(generics.ListCreateAPIView):
         except Cart.DoesNotExist:
             raise NotFound(detail="Cart not found for the user", code=status.HTTP_404_NOT_FOUND)
 
+
     def get(self, request, *args, **kwargs):
         user = self.get_user_from_token(request)
         cart = self.get_cart_for_user(user)
@@ -209,6 +409,7 @@ class CartItemListCreateView(generics.ListCreateAPIView):
         cart_items = CartItem.objects.filter(cart_id=cart.id)
         serializer = self.get_serializer(cart_items, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
     def create(self, request, *args, **kwargs):
         user = self.get_user_from_token(request)
@@ -279,7 +480,7 @@ class CartItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         if not obj:
             raise NotFound(detail="Cart item not found", code=status.HTTP_404_NOT_FOUND)
         return obj
-
+    @method_decorator(csrf_protect)
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
@@ -296,22 +497,6 @@ class CartItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         self.perform_update(serializer)
 
         return Response(serializer.data)
-
-
-class CartCreateView(generics.CreateAPIView):
-    queryset = Cart.objects.all()
-    serializer_class = CartSerializer
-
-    # permission_classes = [IsAuthenticated]
-
-    def create(self, request, *args, **kwargs):
-        user = request.user
-        cart, created = Cart.objects.get_or_create(user_id=user.id)
-        if created:
-            return Response({'cart_id': cart.id, 'created': created}, status=status.HTTP_201_CREATED)
-        else:
-            return Response({'error': 'Cart already exists for this user'}, status=status.HTTP_400_BAD_REQUEST)
-
 
 # User = get_user_model()
 class CartAPIView(generics.RetrieveAPIView):
@@ -382,51 +567,14 @@ class CartAPIView(generics.RetrieveAPIView):
         return Response(serializer.data)
 
 
-class OrganisationCreateView(generics.CreateAPIView):
-    queryset = Organisation.objects.all()
-    serializer_class = OrganisationSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
-    def create(self, request, *args, **kwargs):
-
-        jwt_authenticator = JWTAuthentication()
-        auth_header = request.headers.get('Authorization')
-        if not auth_header:
-            raise AuthenticationFailed('Authorization header is missing')
-
-        try:
-            token_str = auth_header.split()[1]
-            validated_token = jwt_authenticator.get_validated_token(token_str)
-            is_super_user = validated_token.get('is_superuser')
-            if not is_super_user:
-                raise AuthenticationFailed('You cannot perform this action')
-            else:
-                serializer = self.get_serializer(data=request.data)
-                if serializer.is_valid():
-                    try:
-                        serializer.save()
-                        return Response(serializer.data, status=status.HTTP_201_CREATED)
-                    except IntegrityError as e:
-                        return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-                else:
-                    print("Received data: ", request.data)  # Log received data
-                    print("Errors: ", serializer.errors)  # Log validation errors
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        except (User.DoesNotExist, IndexError, KeyError):
-            raise AuthenticationFailed('Invalid token or user not found')
-
 # Product view
-
 class ProductDetail(generics.RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-
 class ProductList(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-
 
 class ProductDeleteView(generics.DestroyAPIView):
     queryset = Product.objects.all()
@@ -451,7 +599,6 @@ class ProductDeleteView(generics.DestroyAPIView):
                 return Response({"message": "Product deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
         except (User.DoesNotExist, IndexError, KeyError):
             raise AuthenticationFailed('Invalid token or user not found')
-
 
 # class ProductUpdateView(generics.UpdateAPIView):
 #     queryset = Product.objects.all()
@@ -549,9 +696,6 @@ class ProductCreateView(generics.CreateAPIView):
             raise AuthenticationFailed('Invalid token or user not found')
 
 
-class ProductCategoryCreateView(generics.CreateAPIView):
-    queryset = ProductCategory.objects.all()
-    serializer_class = ProductCategorySerializer
 
 class OrganisationListView(generics.ListAPIView):
    queryset = Organisation.objects.all()
@@ -680,13 +824,11 @@ class ProductReviewRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIVi
 
 
 
-class CategoryList(generics.ListAPIView):
-    queryset = ProductCategory.objects.all()
-    serializer_class = ProductCategorySerializer
 
 class TwoFactorLoginView(generics.GenericAPIView):
     serializer_class = TwoFactorLoginVerification
 
+    @method_decorator(csrf_protect)
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -747,7 +889,7 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
 
 def get_common_passwords(request):
-    file_path = os.path.join(os.path.dirname(__file__), r'C:\Users\jinyu\Desktop\charitycentral\frontend\src\user\pages\register\1000-most-common-passwords.txt')
+    file_path = os.path.join(os.path.dirname(__file__), '..', '..', 'frontend', 'src', 'user', 'pages', 'register', '1000-most-common-passwords.txt')
     with open(file_path, 'r') as file:
         common_passwords = file.read().splitlines()
     return JsonResponse(common_passwords, safe=False)
