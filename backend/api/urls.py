@@ -13,7 +13,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('users/', UserList.as_view(), name='user-list'),
     path('hello-world/', views.hello_world, name='hello_world'),
-    path('products/', views.ProductList.as_view(), name='product-list'),
+    path('products/', ProductList.as_view(), name='product-list'),
     path('manage-products/', ProductCreateView.as_view(), name='product-create'),
     path('products/<int:pk>/', ProductDetail.as_view(), name='product-detail'),
     path('cart/cart-items/', CartItemListCreateView.as_view(), name='cartitem-list-create'),
