@@ -152,25 +152,25 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
-#CSRF settings
-CORS_ALLOW_CREDENTIALS = True
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = TrueCSRF_COOKIE_SAMESITE = 'None'
-SESSION_COOKIE_SAMESITE = 'None'
-CSRF_COOKIE_DOMAIN = '127.0.0.1' #TODO: Change this to your domain
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Adjust based on your frontend URL
-    "http://127.0.0.1:3000",  # Adjust based on your frontend URL
-]
+# #CSRF settings
+# CORS_ALLOW_CREDENTIALS = True
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = TrueCSRF_COOKIE_SAMESITE = 'None'
+# SESSION_COOKIE_SAMESITE = 'None'
+# CSRF_COOKIE_DOMAIN = '127.0.0.1' #TODO: Change this to your domain
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",  # Adjust based on your frontend URL
+#     "http://127.0.0.1:3000",  # Adjust based on your frontend URL
+# ]
 
-CORS_ALLOW_HEADERS = [
-    'content-type',
-    'x-csrftoken',
-    'authorization',
-    # Add other headers as needed
-]
+# CORS_ALLOW_HEADERS = [
+#     'content-type',
+#     'x-csrftoken',
+#     'authorization',
+#     # Add other headers as needed
+# ]
 
-CSRF_TRUSTED_ORIGINS = ['https://*.mydomain.com','https://*.127.0.0.1','http://127.0.0.1:3000']
+# CSRF_TRUSTED_ORIGINS = ['https://*.mydomain.com','https://*.127.0.0.1','http://127.0.0.1:3000']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
