@@ -1,0 +1,57 @@
+.manage-users-content {
+    width: 95%;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.manage-users-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px; /* Provides space below the header */
+}
+
+.manage-users-heading {
+    margin: 0;
+    padding-bottom: 10px; /* Adds padding below the heading for additional space */
+}
+
+.manage-users-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.manage-users-table th, .manage-users-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.manage-users-table th {
+    background-color: #000000;
+    color: white;
+}
+
+.manage-users-table td {
+    vertical-align: middle; /* Aligns the content of table cells to the middle vertically */
+}
+
+/* Styling for any buttons within the manage users table */
+.button-edit, .button-delete {
+    padding: 8px 15px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 5px; /* Provides spacing between buttons */
+}
+
+.button-edit {
+    background-color: #2196F3; /* Blue background for edit button */
+}
+
+.button-delete {
+    background-color: #f44336; /* Red background for delete button */
+}
