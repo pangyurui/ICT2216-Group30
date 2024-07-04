@@ -1,0 +1,145 @@
+/* General container styling */
+.payments-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 20px;
+}
+
+/* Form styling */
+.payments-form {
+    width: 400px;
+    padding: 20px;
+    box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 25px;
+    background-color: #fff;
+    margin-bottom: 20px;
+}
+
+/* Form title styling */
+.payments-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Form input field styling */
+.payments-form div {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.payments-form label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.payments-form input, .payments-form select {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+/* Button styling */
+.payments-form button {
+    width: 100%;
+    height: 50px;
+    background-color: rgb(19, 19, 19);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    margin-top: 20px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.payments-form button:hover {
+    background-color: #333;
+}
+
+/* Payments list styling */
+.payments-list {
+    list-style: none;
+    padding: 0;
+    width: 400px;
+    margin-top: 5px;
+}
+
+.payments-list li {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
+.payments-list li:hover {
+    background-color: #f1f1f1;
+}
+
+.payment-summary {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.payment-details {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.payment-type,
+.provider,
+.account-no,
+.expiry {
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}
+
+.payment-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.payments-list button {
+    background-color: rgb(19, 19, 19);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.payments-list button:hover {
+    background-color: #333;
+}
+
+.payments-list button.edit-button {
+    background-color: #007bff;
+}
+
+.payments-list button.edit-button:hover {
+    background-color: #0056b3;
+}
+
+.payments-list button.delete-button {
+    background-color: rgb(255, 0, 0);
+}
+
+.payments-list button.delete-button:hover {
+    background-color: #cc0000;
+}

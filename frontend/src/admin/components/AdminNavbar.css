@@ -1,0 +1,40 @@
+.admin-navbar {
+    width: 100%;
+    height: 80px;
+    background-color: rgb(19, 19, 19);
+    display: flex;
+    justify-content: flex-end;/* Adjusted for better distribution */
+    align-items: center;
+    /* padding: 0 20px; */
+}
+
+.admin-navbar .links a, .admin-navbar .logout-link {
+    color: white;
+    font-size: 25px; /* Matching font size with user navbar */
+    text-decoration: none;
+    margin: 0 20px; /* Consistent margin for all links */
+    display: flex;
+    align-items: center;
+}
+
+.admin-navbar .links {
+    display: flex;
+    align-items: center;
+}
+
+.logout-link {
+    background-color: #d32f2f; /* Red color for logout to make it distinct */
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+    cursor: pointer; /* Ensures it's clear this is clickable */
+}
+
+.logout-link:hover {
+    background-color: #c62828; /* Darker shade on hover */
+}
+
+/* Optional: adding a small icon next to logout if desired */
+.logout-link svg {
+    margin-right: 8px;
+}
