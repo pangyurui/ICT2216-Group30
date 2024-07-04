@@ -8,7 +8,7 @@
 }
 
 .links {
-  margin-right: 50px;
+  margin-right: 25px;
   display: flex;
   align-items: center;
 }
@@ -18,4 +18,42 @@
   color: white;
   margin-left: 20px;
   font-size: 25px;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  position: relative;
+  color: white;
+  margin-right: 50px;
+  margin-bottom: 5px;
+}
+
+.auth-links, .account-options {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 50%;
+  transform: translateX(50%);
+  background: white;
+  color: black;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 0.25rem;
+}
+
+.profile:hover .auth-links,
+.profile:hover .account-options {
+  display: block;
+}
+
+.auth-links a, .account-options a {
+  color: black;
+  display: block;
+  padding: 0.5rem;
+  text-decoration: none;
+}
+
+.auth-links a:hover, .account-options a:hover {
+  background-color: #f0f0f0;
 }

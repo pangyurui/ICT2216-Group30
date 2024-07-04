@@ -1,0 +1,66 @@
+.admin-content {
+    width: 95%;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.admin-heading {
+    margin: 0;
+    padding-bottom: 10px;
+}
+
+.admin-add-btn, .edit-btn, .delete-btn {
+    padding: 10px 20px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 5px;
+}
+
+.admin-add-btn {
+    background-color: #4CAF50;
+}
+
+.edit-btn {
+    background-color: #2196F3;
+}
+
+.delete-btn {
+    background-color: #f44336;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th, .admin-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.admin-table th {
+    background-color: #000000;
+    color: white;
+}
+
+.admin-table td {
+    vertical-align: middle;
+}
+
+.admin-table img {
+    width: 100px;
+    height: auto;
+    border-radius: 5px;
+}
