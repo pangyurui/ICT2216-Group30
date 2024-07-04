@@ -146,8 +146,8 @@ class LoginSerializer(serializers.Serializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = '_all'
-        
+        fields = '_all__'
+
 class CartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem

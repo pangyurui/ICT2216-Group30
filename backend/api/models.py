@@ -154,7 +154,7 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
-    organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE, related_name='orgs', default=1)
+    organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE, related_name='products')
 
     def __str__(self):
         return self.name
