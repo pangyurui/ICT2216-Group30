@@ -1,0 +1,117 @@
+/* General container styling */
+.checkout-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 20px;
+}
+
+/* Form styling */
+.checkout-form {
+    width: 400px;
+    padding: 20px;
+    box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 25px;
+    background-color: #fff;
+    margin-bottom: 20px;
+}
+
+/* Form title styling */
+.checkout-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Cart items styling */
+.cart-items {
+    width: 400px;
+    padding: 20px;
+    box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 25px;
+    background-color: #fff;
+    margin-bottom: 20px;
+}
+
+.cart-items h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Payment methods and addresses styling */
+.payment-methods, .delivery-addresses {
+    width: 400px;
+    padding: 20px;
+    box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 25px;
+    background-color: #fff;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.payment-methods h3, .delivery-addresses h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Form input field styling */
+.checkout-form div, .payment-methods div, .delivery-addresses div {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.checkout-form label, .payment-methods label, .delivery-addresses label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.checkout-form input, .checkout-form select, .payment-methods select, .delivery-addresses select {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+/* Button styling */
+.checkout-form button, .complete-order-button {
+    width: 400px;
+    height: 40px;
+    background-color: rgb(19, 19, 19);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    margin-top: 20px;
+    cursor: pointer;
+    font-size: 16px;
+    align-self: center;
+}
+
+.checkout-form button:hover, .complete-order-button:hover {
+    background-color: #333;
+}
+
+/* Add button styling */
+.add-button {
+    width: 70%;
+    height: 40px;
+    background-color: rgb(19, 19, 19);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    margin-top: 10px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.add-button:hover {
+    background-color: #333;
+}
