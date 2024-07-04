@@ -1,0 +1,16 @@
+venv/
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# Python # 
+*.py[cod] 
+*$py.class 
+
+# Django #
+*.log
+*.pot
+*.pyc
+__pycache__
+db.sqlite3
+media
+
