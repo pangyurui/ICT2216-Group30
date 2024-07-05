@@ -10,7 +10,7 @@ export const Organisation = () => {
 
 
     useEffect(() => {
-        axios.get('http://127.0.0.1:8000/api/organisations/')
+        axios.get('https://ict2216group30.store/api/organisations/')
             .then(response => {
                 setOrganisations(response.data);
                 setLoading(false);
