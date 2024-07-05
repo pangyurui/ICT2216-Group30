@@ -5,7 +5,7 @@ function HelloWorld() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    axios.get('http://localhost:8000/api/hello-world/')
+    axios.get('https://ict2216group30.store/api/hello-world/')
       .then(response => {
         setMessage(response.data.message);
       })
