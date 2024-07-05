@@ -85,6 +85,11 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
                         export DJANGO_SECRET_KEY=\\"${env.DJANGO_SECRET_KEY}\\" &&
+                        export DATABASE_NAME=\\"${env.DATABASE_NAME}\\" &&
+                        export DATABASE_USER=\\"${env.DATABASE_USER}\\" &&
+                        export DATABASE_PASSWORD=\\"${env.DATABASE_PASSWORD}\\" &&
+                        export DATABASE_HOST=\\"${env.DATABASE_HOST}\\" &&
+                        export DATABASE_PORT=\\"${env.DATABASE_PORT}\\" &&
                         source ${env.VENV_PATH}/bin/activate &&
                         cd ${env.BACKEND_PATH}
                         nohup gunicorn backend.wsgi:application > gunicorn.log 2>&1 &
