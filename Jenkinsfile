@@ -95,4 +95,28 @@ pipeline {
                 sshagent([env.SSH_CREDENTIALS]) {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
-                        sudo
+                        sudo nginx -t &&
+                        sudo systemctl restart nginx
+                        "
+                    """
+                }
+            }
+        }
+        stage('OWASP Dependency-Check') {
+            steps {
+                dependencyCheck additionalArguments: '''
+                    --noupdate
+                    -o './'
+                    -s './'
+                    -f 'ALL'
+                    --prettyPrint''', odcInstallation: "${env.ODC}"
+            }
+        }
+    }
+    post {
+        always {
+            dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+            cleanWs()
+        }
+    }
+}
