@@ -84,6 +84,8 @@ pipeline {
                 sshagent([env.SSH_CREDENTIALS]) {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
+                        cd ${env.REMOTE_DIR} &&
+                        source ${env.VENV_PATH}/bin/activate &&
                         cd ${env.BACKEND_PATH} && ${env.GUNICORN_CMD} > gunicorn.log 2>&1 &
                         "
                     """
