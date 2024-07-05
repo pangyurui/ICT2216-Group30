@@ -6,7 +6,8 @@ from .views import ProductList, ProductDetail, CartItemListCreateView, ProductCr
     ProductUpdateView, OrganisationCreateView, OrganisationRetrieveUpdateDestroyView, \
     OrganisationListView, ProductReviewListCreateView, ProductReviewRetrieveUpdateDestroyView, \
     TwoFactorSetupView, TwoFactorLoginView, UserPaymentListCreateView, UserPaymentRetrieveUpdateDestroyView, \
-    UserAddressListCreateView, UserAddressRetrieveUpdateDestroyView, get_common_passwords, get_csrf_token
+    UserAddressListCreateView, UserAddressRetrieveUpdateDestroyView, get_common_passwords, get_csrf_token, \
+    UserAccountView
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -27,9 +28,13 @@ urlpatterns = [
     path('organisations/<int:pk>/', OrganisationRetrieveUpdateDestroyView.as_view(), name='organisation-detail'),
     path('user/', UserDetailView.as_view(), name='user-detail'),
     path('users/<int:pk>/', UserDetailView.as_view(), name='user-detail'),
-    path('account/', UserDetailView.as_view(), name='account_detail'),
+    path('account/', UserAccountView.as_view(), name='account_detail'),
     path('account/update/', UserUpdateView.as_view(), name='account_update'),
     path('account/delete/', UserDeleteView.as_view(), name='account_delete'),
+    path('payments/', UserPaymentListCreateView.as_view(), name='user_payment_list_create'),
+    path('payments/<int:pk>/', UserPaymentRetrieveUpdateDestroyView.as_view(), name='user_payment_detail'),
+    path('addresses/', UserAddressListCreateView.as_view(), name='user_address_list_create'),
+    path('addresses/<int:pk>/', UserAddressRetrieveUpdateDestroyView.as_view(), name='user_address_detail'),
     path('products/add/', ProductCreateView.as_view(), name='product-add'),
     path('products/delete/<int:pk>/', ProductDeleteView.as_view(), name='product-delete'),
     path('products/update/<int:pk>/', ProductUpdateView.as_view(), name='product-update'),
@@ -43,4 +48,3 @@ urlpatterns = [
     path('common-passwords/', get_common_passwords, name='get_common_passwords'),
     path('get_csrf_token/', get_csrf_token, name='get_csrf_token'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-

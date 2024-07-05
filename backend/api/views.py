@@ -114,7 +114,7 @@ def OrganisationCreateView(request):
 
 
 # Read User
-class UserDetailView(generics.RetrieveAPIView):
+class UserAccountView(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]

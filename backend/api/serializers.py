@@ -144,9 +144,65 @@ class LoginSerializer(serializers.Serializer):
 #         return value
 
 class ProductSerializer(serializers.ModelSerializer):
+    # category_id = serializers.PrimaryKeyRelatedField(
+    #     queryset=ProductCategory.objects.all(),
+    #     source='category',
+    #     write_only=False,
+    #     required=False,  # If not always required
+    #     allow_null=True,  # If null is allowed
+    # )
+    organisation_id = serializers.PrimaryKeyRelatedField(
+        queryset=Organisation.objects.all(),
+        source='organisation',
+        write_only=False,
+        required=False,  # If not always required
+        allow_null=True,  # If null is allowed
+    )
+
     class Meta:
         model = Product
-        fields = '__all__'
+        fields = (
+            'id', 'name', 'description', 'price', 'image', 'organisation_id', 'created_at',
+            'modified_at',
+            'deleted_at')
+
+    def create(self, validated_data):
+        # Extracting and handling the relationships separately if needed
+        # category = validated_data.pop('category', None)
+        organisation = validated_data.pop('organisation', None)
+        # product = Product.objects.create(category=category, organisation=organisation, **validated_data)
+        product = Product.objects.create(organisation=organisation, **validated_data)
+        return product
+
+    def update(self, instance, validated_data):
+        # update logic for your fields
+        instance.name = validated_data.get('name', instance.name)
+        instance.description = validated_data.get('description', instance.description)
+        instance.price = validated_data.get('price', instance.price)
+        # instance.category = validated_data.get('category', instance.category)
+        instance.organisation = validated_data.get('organisation', instance.organisation)
+        instance.save()
+        return instance
+
+    def validate_deleted_at(self, value):
+        if isinstance(value, datetime.datetime):
+            return value  # Return the datetime object if it's already a datetime
+
+        if value in ['null', None, '']:  # Handle 'null' as a string, actual None, and empty string
+            return None
+
+        try:
+            # Convert string to datetime object
+            return datetime.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%fZ')
+        except ValueError:
+            raise serializers.ValidationError(
+                "Datetime has wrong format. Use this format instead: YYYY-MM-DDThh:mm:ss.ssssssZ")
+
+    def validate_image(self, value):
+        if value.size > 1024 * 1024 * 5:  # limit to 5MB
+            raise serializers.ValidationError("Image file too large ( > 5MB )")
+        return value
+
 
 class CartItemSerializer(serializers.ModelSerializer):
     class Meta:
