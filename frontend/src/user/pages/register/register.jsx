@@ -21,7 +21,7 @@ export const Register = () => {
     useEffect(() => {
         const fetchCommonPasswords = async () => {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/common-passwords/');
+                const response = await axios.get('https://ict2216group30.store/api/common-passwords/');
                 setCommonPasswords(response.data);
             } catch (error) {
                 console.error('Error fetching common passwords:', error);
@@ -31,7 +31,7 @@ export const Register = () => {
         // Fetch the CSRF token from the backend
         const fetchCSRFToken = async () => {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/get_csrf_token/', {
+                const response = await axios.get('https://ict2216group30.store/api/get_csrf_token/', {
                     withCredentials: true // Include credentials (cookies)
                 });
                 const token = Cookies.get('csrftoken'); // Retrieve CSRF token from cookies
@@ -145,7 +145,7 @@ export const Register = () => {
         };
 
         try {
-            const res = await axios.post('http://127.0.0.1:8000/api/register/', sanitizedData, {
+            const res = await axios.post('https://ict2216group30.store/api/register/', sanitizedData, {
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrfToken // Include CSRF token in headers
