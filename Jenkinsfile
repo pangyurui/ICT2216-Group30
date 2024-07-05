@@ -86,7 +86,7 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
                         source ${env.VENV_PATH}/bin/activate &&
                         cd ${env.SSH_DIR} 
-                        sh './start_gunicorn.sh'
+                        sh './gunicorn_script.sh'
                         "
                     """
                 }
