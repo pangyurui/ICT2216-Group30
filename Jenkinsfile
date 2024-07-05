@@ -58,7 +58,7 @@ pipeline {
                 }
             }
         }
-        stage('Start Gunicorn and Set Permissions') {
+        stage('Setting Permissions') {
             steps {
                 sshagent([env.SSH_CREDENTIALS]) {
                     sh """
@@ -73,8 +73,17 @@ pipeline {
                         sudo chmod -R 755 ${env.BACKEND_PATH}/media &&
                         sudo chown -R ${env.WWW_USER}:${env.WWW_USER} ${env.BACKEND_PATH}/media &&
                         cd ${env.BACKEND_PATH} &&
-                        pkill gunicorn || true &&
-                        sleep 2 &&
+                        pkill gunicorn || true
+                        "
+                    """
+                }
+            }
+        }
+        stage('Starting Backend Services') {
+            steps {
+                sshagent([env.SSH_CREDENTIALS]) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
                         nohup ${env.GUNICORN_CMD} > gunicorn.log 2>&1 &
                         "
                     """
@@ -86,28 +95,4 @@ pipeline {
                 sshagent([env.SSH_CREDENTIALS]) {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
-                        sudo nginx -t &&
-                        sudo systemctl restart nginx
-                        "
-                    """
-                }
-            }
-        }
-        stage('OWASP Dependency-Check') {
-            steps {
-                dependencyCheck additionalArguments: '''
-                    --noupdate
-                    -o './'
-                    -s './'
-                    -f 'ALL'
-                    --prettyPrint''', odcInstallation: "${env.ODC}"
-            }
-        }
-    }
-    post {
-        always {
-            dependencyCheckPublisher pattern: 'dependency-check-report.xml'
-            cleanWs()
-        }
-    }
-}
+                        sudo
