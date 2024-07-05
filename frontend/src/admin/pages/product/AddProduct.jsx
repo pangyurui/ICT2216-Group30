@@ -22,12 +22,12 @@ const AddProduct = () => {
 
     useEffect(() => {
         // // Fetch categories
-        // axios.get('http://127.0.0.1:8000/api/categories/')
+        // axios.get('https://ict2216group30.store/api/categories/')
         //     .then(response => setCategories(response.data))
         //     .catch(error => console.error('Error fetching categories:', error));
 
         // Fetch organisations
-        axios.get('http://127.0.0.1:8000/api/organisations/')
+        axios.get('https://ict2216group30.store/api/organisations/')
             .then(response => setOrganisations(response.data))
             .catch(error => console.error('Error fetching organisations:', error));
     }, []);
@@ -72,7 +72,7 @@ const AddProduct = () => {
         }
 
         // //Handle post request
-        // axios.post('http://127.0.0.1:8000/api/products/', formData)
+        // axios.post('https://ict2216group30.store/api/products/', formData)
         //     .then(response => {
         //         console.log('Product added:', response.data);
         //         navigate('/admin'); // Redirect on successful add
@@ -80,7 +80,7 @@ const AddProduct = () => {
         //     .catch(error => console.error('Error adding product:', error));
 
          // Handle the post request
-         axios.post('http://127.0.0.1:8000/api/products/add/', formData, {
+         axios.post('https://ict2216group30.store/api/products/add/', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
                  'Authorization': `Bearer ${token}`
