@@ -13,7 +13,7 @@ const AdminDashboard = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get('http://127.0.0.1:8000/api/products/')
+        axios.get('https://ict2216group30.store/api/products/')
             .then(response => {
                 const formattedData = response.data.map(product => ({
                     ...product,
@@ -42,7 +42,7 @@ const AdminDashboard = () => {
 
     const deleteProduct = (productId) => {
         if (window.confirm("Are you sure you want to delete this product? This action cannot be undone.")) {
-            axios.delete(`http://127.0.0.1:8000/api/products/delete/${productId}/`)
+            axios.delete(`https://ict2216group30.store/api/products/delete/${productId}/`)
                 .then(() => {
                     alert('Product deleted successfully');
                     setProducts(currentProducts => currentProducts.filter(p => p.id !== productId));
