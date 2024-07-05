@@ -49,7 +49,6 @@ def hello_world(request):
     return Response({'message': 'Hello, world!'})
 
 @ensure_csrf_cookie
-@csrf_exempt
 @require_http_methods(["GET", "OPTIONS"])
 def get_csrf_token(request):
     return JsonResponse({'detail': 'CSRF cookie set'})
