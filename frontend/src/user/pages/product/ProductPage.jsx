@@ -16,7 +16,7 @@ export const ProductPage = () => {
     // Fetch CSRF token
     const fetchCSRFToken = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/get_csrf_token/');
+        const response = await axios.get('https://ict2216group30.store/api/get_csrf_token/');
         setCsrfToken(response.data.csrfToken);
       } catch (error) {
         console.error('Failed to fetch CSRF token:', error);
@@ -26,7 +26,7 @@ export const ProductPage = () => {
     fetchCSRFToken();
 
     // Fetch product details
-    axios.get(`http://127.0.0.1:8000/api/products/${id}/`, {
+    axios.get(`https://ict2216group30.store/api/products/${id}/`, {
       headers: {
         'X-CSRFToken': csrfToken
       }
@@ -41,7 +41,7 @@ export const ProductPage = () => {
       });
 
     // Fetch reviews for the product
-    axios.get(`http://127.0.0.1:8000/api/products/${id}/reviews/`, {
+    axios.get(`https://ict2216group30.store/api/products/${id}/reviews/`, {
       headers: {
         'X-CSRFToken': csrfToken
       }
