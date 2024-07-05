@@ -15,7 +15,7 @@ export const Shop = () => {
 
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/api/products/')
+    axios.get('https://ict2216group30.store/api/products/')
       .then(response => {
         setProducts(response.data);
         setSearchResults(response.data);
