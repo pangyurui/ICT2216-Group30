@@ -180,6 +180,27 @@ class UserAddressRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView
 class UserList(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        jwt_authenticator = JWTAuthentication()
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            raise AuthenticationFailed('Authorization header is missing')
+
+        try:
+            token_str = auth_header.split()[1]
+            validated_token = jwt_authenticator.get_validated_token(token_str)
+            is_super_user = validated_token.get('is_superuser')
+            if not is_super_user:
+                raise AuthenticationFailed('You cannot perform this action')
+
+            # If superuser, proceed to get the user list
+            return self.list(request, *args, **kwargs)
+
+        except (User.DoesNotExist, IndexError, KeyError):
+            raise AuthenticationFailed('Invalid token or user not found')
+    
 
 @method_decorator(csrf_protect, name='post')
 class LogoutView(generics.GenericAPIView):
