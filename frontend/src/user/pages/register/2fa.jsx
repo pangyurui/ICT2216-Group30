@@ -23,7 +23,7 @@ export const TwoFALogin = ({ setAuth }) => {
         // Fetch the CSRF token from the backend
         const fetchCSRFToken = async () => {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/get_csrf_token/', {
+                const response = await axios.get('https://ict2216group30.store/api/get_csrf_token/', {
                     withCredentials: true // Include credentials (cookies)
                 });
                 const token = Cookies.get('csrftoken'); // Retrieve CSRF token from cookies
@@ -41,7 +41,7 @@ export const TwoFALogin = ({ setAuth }) => {
     const onSubmit = async e => {
         e.preventDefault();
         try {
-            const res = await axios.post('http://127.0.0.1:8000/api/two-factor-login/', { username, password }, {
+            const res = await axios.post('https://ict2216group30.store/api/two-factor-login/', { username, password }, {
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrfToken // Include CSRF token in headers
@@ -65,7 +65,7 @@ export const TwoFALogin = ({ setAuth }) => {
     const onOtpSubmit = async e => {
         e.preventDefault();
         try {
-            const res = await axios.post('http://127.0.0.1:8000/api/two-factor-setup/', { username, password, otpToken }, {
+            const res = await axios.post('https://ict2216group30.store/api/two-factor-setup/', { username, password, otpToken }, {
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrfToken // Include CSRF token in headers
