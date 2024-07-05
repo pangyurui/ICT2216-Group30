@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getAccessToken } from './auth';
 
 export const axiosAuth = axios.create({
-    baseURL: 'http://127.0.0.1:8000/api/',
+    baseURL: 'https://ict2216group30.store/api/',
 });
 
 axiosAuth.interceptors.request.use(async (config) => {
