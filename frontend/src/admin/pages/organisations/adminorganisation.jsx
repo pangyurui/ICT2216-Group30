@@ -13,7 +13,7 @@ export const AdminOrganisation = () => {
   }, []);
 
   const fetchData = () => {
-    axios.get("http://127.0.0.1:8000/api/organisations?format=json")
+    axios.get("https://ict2216group30.store/api/organisations?format=json")
       .then(response => {
         if (Array.isArray(response.data)) {
           setData(response.data);
@@ -32,7 +32,7 @@ export const AdminOrganisation = () => {
   const handleDelete = (id) => {
     // Add a confirmation dialog
     if (window.confirm("Are you sure you want to delete this organisation? This process cannot be undone.")) {
-      axios.delete(`http://127.0.0.1:8000/api/organisations/${id}/`)
+      axios.delete(`https://ict2216group30.store/api/organisations/${id}/`)
         .then(() => {
           alert('Organisation deleted successfully');
           fetchData(); // Re-fetch data to update the list after deletion
