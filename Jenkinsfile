@@ -80,20 +80,15 @@ pipeline {
             }
         }
         stage('Starting Backend Services') {
-            parallel {
-                stage('Running Script'){
-                    steps {
-                        sshagent([env.SSH_CREDENTIALS]) {
-                            sh """
-                                ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
-                                cd ${env.REMOTE_DIR} &&
-                                source ${env.VENV_PATH}/bin/activate &&
-                                cd ${env.BACKEND_PATH} &&
-                                nohup ${env.GUNICORN_CMD} > gunicorn.log 2>&1 &
-                                "
-                            """
-                        }
-                    }
+            steps {
+                sshagent([env.SSH_CREDENTIALS]) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
+                        cd ${env.REMOTE_DIR} &&
+                        source ${env.VENV_PATH}/bin/activate &&
+                        sh './start_gunicorn.sh'
+                        "
+                    """
                 }
             }
         }
