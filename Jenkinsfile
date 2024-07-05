@@ -86,8 +86,8 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
                         export DJANGO_SECRET_KEY=\\"${env.DJANGO_SECRET_KEY}\\" &&
                         source ${env.VENV_PATH}/bin/activate &&
-                        cd ${env.SSH_DIR} 
-                        sh './gunicorn_script.sh'
+                        cd ${env.BACKEND_PATH} 
+                        nohup sh -c 'gunicorn backend.wsgi:application' > gunicorn.log 2>&1 &
                         "
                     """
                 }
