@@ -84,7 +84,7 @@ pipeline {
                 sshagent([env.SSH_CREDENTIALS]) {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
-                        cd ${env.BACKEND_PATH} &&
+                        cd ${env.BACKEND_PATH}
                         sudo nohup ${env.GUNICORN_CMD} > gunicorn.log 2>&1 &
                         "
                     """
