@@ -73,6 +73,7 @@ pipeline {
                         sudo chmod -R 755 ${env.BACKEND_PATH}/media &&
                         sudo chown -R ${env.WWW_USER}:${env.WWW_USER} ${env.BACKEND_PATH}/media &&
                         cd ${env.BACKEND_PATH} &&
+                        pkill gunicorn || true
                         "
                     """
                 }
@@ -85,7 +86,8 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
                         export DJANGO_SECRET_KEY=\\"${env.DJANGO_SECRET_KEY}\\" &&
                         source ${env.VENV_PATH}/bin/activate &&
-                        cd ${env.BACKEND_PATH} 
+                        cd ${env.BACKEND_PATH}
+                        nohup gunicorn backend.wsgi:application > gunicorn.log 2>&1 &
                         "
                     """
                 }
