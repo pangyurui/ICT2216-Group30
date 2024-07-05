@@ -18,7 +18,7 @@ export const Login = ({ setAuth, setHasLoggedOut }) => {
     useEffect(() => {
         const fetchCSRFToken = async () => {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/get_csrf_token/', {
+                const response = await axios.get('https://ict2216group30.store/api/get_csrf_token/', {
                     withCredentials: true // Important: include credentials (cookies)
                 });
                 const token = Cookies.get('csrftoken'); // Retrieve CSRF token from cookies
@@ -110,7 +110,7 @@ export const Login = ({ setAuth, setHasLoggedOut }) => {
         };
 
         try {
-            const res = await axios.post('http://127.0.0.1:8000/api/login/', sanitizedData, {
+            const res = await axios.post('https://ict2216group30.store/api/login/', sanitizedData, {
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrfToken // Include CSRF token in headers
