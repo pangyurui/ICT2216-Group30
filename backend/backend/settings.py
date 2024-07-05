@@ -159,8 +159,8 @@ SESSION_COOKIE_SECURE = TrueCSRF_COOKIE_SAMESITE = 'None'
 SESSION_COOKIE_SAMESITE = 'None'
 CSRF_COOKIE_DOMAIN = 'ict2216group30.store' #TODO: Change this to your domain
 CORS_ALLOWED_ORIGINS = [
-    "https://ict2216group30.store/",  # Adjust based on your frontend URL
-    "https://www.ict2216group30.store/",  # Adjust based on your frontend URL
+    "https://ict2216group30.store",  # Adjust based on your frontend URL
+    "https://www.ict2216group30.store",  # Adjust based on your frontend URL
 ]
 
 CORS_ALLOW_HEADERS = [
