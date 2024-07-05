@@ -85,7 +85,7 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
                         cd ${env.BACKEND_PATH} &&
-                        nohup ${env.GUNICORN_CMD} > gunicorn.log 2>&1 &
+                        sudo nohup ${env.GUNICORN_CMD} > gunicorn.log 2>&1 &
                         "
                     """
                 }
