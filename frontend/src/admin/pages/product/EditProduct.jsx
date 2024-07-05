@@ -23,7 +23,7 @@ const EditProduct = () => {
 
     useEffect(() => {
         // Fetch product details
-        axios.get(`http://127.0.0.1:8000/api/products/${id}/`)
+        axios.get(`https://ict2216group30.store/api/products/${id}/`)
             .then(response => {
                 const data = response.data;
                 setProduct({
@@ -41,11 +41,11 @@ const EditProduct = () => {
             .catch(error => console.error('Error fetching product details:', error));
 
         // Fetch categories and organisations
-        axios.get(`http://127.0.0.1:8000/api/categories/`)
+        axios.get(`https://ict2216group30.store/api/categories/`)
             .then(res => setCategories(res.data))
             .catch(err => console.error('Error fetching categories:', err));
 
-        axios.get(`http://127.0.0.1:8000/api/organisations/`)
+        axios.get(`https://ict2216group30.store/api/organisations/`)
             .then(res => setOrganisations(res.data))
             .catch(err => console.error('Error fetching organisations:', err));
     }, [id]);
@@ -95,7 +95,7 @@ const EditProduct = () => {
             if (!token) {
                 throw new Error('No access token found');
             }
-        axios.put(`http://127.0.0.1:8000/api/products/update/${id}/`, formData, {
+        axios.put(`https://ict2216group30.store/api/products/update/${id}/`, formData, {
             headers: { 'Content-Type': 'multipart/form-data',
                 'Authorization': `Bearer ${token}`
              }
