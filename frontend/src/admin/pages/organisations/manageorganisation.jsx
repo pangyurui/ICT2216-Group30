@@ -15,7 +15,7 @@ export const ManageOrganisation = () => {
 
   useEffect(() => {
     if (id) {
-      axios.get(`http://127.0.0.1:8000/api/organisations/${id}/`)
+      axios.get(`https://ict2216group30.store/api/organisations/${id}/`)
         .then(response => {
           setFormData({
             name: response.data.name,
@@ -48,8 +48,8 @@ export const ManageOrganisation = () => {
     }
 
     const url = id 
-      ? `http://127.0.0.1:8000/api/organisations/${id}/`
-      : "http://127.0.0.1:8000/api/manage-organisations/";
+      ? `https://ict2216group30.store/api/organisations/${id}/`
+      : "https://ict2216group30.store/api/manage-organisations/";
 
     const method = id ? 'put' : 'post';
     const token = localStorage.getItem('access_token');
