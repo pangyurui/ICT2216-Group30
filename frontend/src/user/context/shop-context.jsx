@@ -27,7 +27,7 @@ export const ShopContextProvider = (props) => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/products/');
+      const response = await axios.get('https://ict2216group30.store/api/products/');
       setProducts(response.data);
     } catch (error) {
       console.error('Error fetching products', error);
@@ -46,7 +46,7 @@ export const ShopContextProvider = (props) => {
         throw new Error('No access token found');
       }
 
-      const cartResponse = await axios.get('http://127.0.0.1:8000/api/cart/', {
+      const cartResponse = await axios.get('https://ict2216group30.store/api/cart/', {
         headers: {
           Authorization: `Bearer ${token}`,
           'X-CSRFToken': csrfToken
@@ -55,7 +55,7 @@ export const ShopContextProvider = (props) => {
 
       setUserCartId(cartResponse.data.id);
 
-      const itemsResponse = await axios.get(`http://127.0.0.1:8000/api/cart/cart-items/`, {
+      const itemsResponse = await axios.get(`https://ict2216group30.store/api/cart/cart-items/`, {
         headers: {
           Authorization: `Bearer ${token}`,
            'X-CSRFToken': csrfToken
@@ -83,7 +83,7 @@ export const ShopContextProvider = (props) => {
 // Fetch CSRF token
      const fetchCSRFToken = async () => {
      try {
-                const response = await axios.get('http://127.0.0.1:8000/api/get_csrf_token/', {
+                const response = await axios.get('https://ict2216group30.store/api/get_csrf_token/', {
                     withCredentials: true // Important: include credentials (cookies)
                 });
                 const token = Cookies.get('csrftoken'); // Retrieve CSRF token from cookies
@@ -107,7 +107,7 @@ export const ShopContextProvider = (props) => {
 
     try {
       const token = localStorage.getItem('access_token');
-      const response = await axios.post('http://127.0.0.1:8000/api/cart/cart-items/', {
+      const response = await axios.post('https://ict2216group30.store/api/cart/cart-items/', {
         quantity: 1,
         product: itemId,
         cart: userCartId
@@ -151,7 +151,7 @@ export const ShopContextProvider = (props) => {
 
     try {
       const token = localStorage.getItem('access_token');
-      await axios.put(`http://127.0.0.1:8000/api/cart/cart-items/${cartItemId}/`, {
+      await axios.put(`https://ict2216group30.store/api/cart/cart-items/${cartItemId}/`, {
         quantity: currentQuantity - 1,
         product: itemId
       }, {
@@ -213,7 +213,7 @@ export const ShopContextProvider = (props) => {
 
     try {
       const token = localStorage.getItem('access_token');
-      await axios.put(`http://127.0.0.1:8000/api/cart/cart-items/${cartItemId}/`, {
+      await axios.put(`https://ict2216group30.store/api/cart/cart-items/${cartItemId}/`, {
         quantity: currentQuantity + 1,
         product: itemId
       }, {
@@ -272,7 +272,7 @@ export const ShopContextProvider = (props) => {
       try {
         const token = localStorage.getItem('access_token');
         await Promise.all(itemsToRemove.map(item =>
-          axios.delete(`http://127.0.0.1:8000/api/cart/cart-items/${cartItems[item.id]?.cartItemId}/`, {
+          axios.delete(`https://ict2216group30.store/api/cart/cart-items/${cartItems[item.id]?.cartItemId}/`, {
             headers: {
               Authorization: `Bearer ${token}`,
               'X-CSRFToken': csrfToken
@@ -312,7 +312,7 @@ export const ShopContextProvider = (props) => {
       try {
         const token = localStorage.getItem('access_token');
         await Promise.all(Object.values(cartItems).map(cartItem =>
-          axios.delete(`http://127.0.0.1:8000/api/cart/cart-items/${cartItem.cartItemId}/`, {
+          axios.delete(`https://ict2216group30.store/api/cart/cart-items/${cartItem.cartItemId}/`, {
             headers: {
               Authorization: `Bearer ${token}`,
               'X-CSRFToken': csrfToken
@@ -352,7 +352,7 @@ export const ShopContextProvider = (props) => {
 
     try {
       const token = localStorage.getItem('access_token');
-      await axios.put(`http://127.0.0.1:8000/api/cart/cart-items/${cartItemId}/`, {
+      await axios.put(`https://ict2216group30.store/api/cart/cart-items/${cartItemId}/`, {
         quantity: newAmount,
         product: itemId
       }, {
