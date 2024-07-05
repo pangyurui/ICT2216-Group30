@@ -86,9 +86,8 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
                         cd ${env.REMOTE_DIR} &&
                         source ${env.VENV_PATH}/bin/activate &&
-                        cd ${env.BACKEND_PATH}
-                        ${env.GUNICORN_CMD} > gunicorn.log 2>&1 & &&
-                        echo "Backend Service running"
+                        cd ${env.BACKEND_PATH} &&
+                        BUILD_ID=dontKillMe nohup ${env.GUNICORN_CMD} > gunicorn.log 2>&1 &
                         "
                     """
                 }
