@@ -51,7 +51,7 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
                         cd ${env.FRONTEND_PATH} &&
                         npm install &&
-			            npm install jwt-decode js-cookie qrcode.react dompurify &&
+                        npm install jwt-decode js-cookie qrcode.react dompurify &&
                         sudo npm run build
                         "
                     """
@@ -72,9 +72,10 @@ pipeline {
                         sudo chown -R ${env.WWW_USER}:${env.WWW_USER} ${env.BACKEND_PATH}/assets &&
                         sudo chmod -R 755 ${env.BACKEND_PATH}/media &&
                         sudo chown -R ${env.WWW_USER}:${env.WWW_USER} ${env.BACKEND_PATH}/media &&
-			            cd ${env.BACKEND_PATH} &&
-			            pkill gunicorn || true &&
-                        nohup ${env.GUNICORN_CMD} > gunicorn.log 2>&1 
+                        cd ${env.BACKEND_PATH} &&
+                        pkill gunicorn || true &&
+                        sleep 2 &&
+                        nohup ${env.GUNICORN_CMD} > gunicorn.log 2>&1 &
                         "
                     """
                 }
