@@ -92,7 +92,7 @@ pipeline {
                         export DATABASE_PORT=\\"${env.DATABASE_PORT}\\" &&
                         source ${env.VENV_PATH}/bin/activate &&
                         cd ${env.BACKEND_PATH}
-                        nohup gunicorn --workers 4 backend.wsgi:application > gunicorn.log 2>&1 &
+                        nohup gunicorn --workers 3 backend.wsgi:application > gunicorn.log 2>&1 &
                         "
                     """
                 }
