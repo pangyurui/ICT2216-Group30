@@ -14,7 +14,7 @@ const ManageUsers = () => {
 
     const fetchUsers = async () => {
         try {
-            const { data } = await axios.get('http://127.0.0.1:8000/api/users/');
+            const { data } = await axios.get('https://ict2216group30.store/api/users/');
             setUsers(data);
             setLoading(false);
         } catch (error) {
@@ -27,7 +27,7 @@ const ManageUsers = () => {
     const handleDelete = (userId) => {
         // Add a confirmation dialog
         if (window.confirm("Are you sure you want to delete this User? This process cannot be undone.")) {
-          axios.delete(`http://127.0.0.1:8000/api/users/${userId}/`)
+          axios.delete(`https://ict2216group30.store/api/users/${userId}/`)
             .then(() => {
               alert('Users deleted successfully');
               setUsers(users.filter(user => user.id !== userId));
@@ -41,7 +41,7 @@ const ManageUsers = () => {
 
     // const handleDelete = async (userId) => {
     //     try {
-    //         await axios.delete(`http://127.0.0.1:8000/api/users/${userId}/`);
+    //         await axios.delete(`https://ict2216group30.store/api/users/${userId}/`);
     //         // After deletion, fetch the list again to reflect changes or remove the user from the state
     //         setUsers(users.filter(user => user.id !== userId));
     //     } catch (error) {
