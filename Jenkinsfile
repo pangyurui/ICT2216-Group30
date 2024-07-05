@@ -73,7 +73,6 @@ pipeline {
                         sudo chmod -R 755 ${env.BACKEND_PATH}/media &&
                         sudo chown -R ${env.WWW_USER}:${env.WWW_USER} ${env.BACKEND_PATH}/media &&
                         cd ${env.BACKEND_PATH} &&
-                        pkill gunicorn || true
                         "
                     """
                 }
@@ -87,7 +86,6 @@ pipeline {
                         export DJANGO_SECRET_KEY=\\"${env.DJANGO_SECRET_KEY}\\" &&
                         source ${env.VENV_PATH}/bin/activate &&
                         cd ${env.BACKEND_PATH} 
-                        nohup sh -c 'gunicorn backend.wsgi:application > gunicorn.log 2>&1 &'
                         "
                     """
                 }
