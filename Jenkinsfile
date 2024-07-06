@@ -84,7 +84,7 @@ pipeline {
                 sshagent([env.SSH_CREDENTIALS]) {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
-                        cp -rf ${env.BACKEND_PATH}/backend/logger ${env.VENV_PATH}/lib/python3.12/site-packages/logger
+                        cp -rf ${env.BACKEND_PATH}/backend/logger ${env.VENV_PATH}/lib/python3.12/site-packages
                         "
                     """
                 }
