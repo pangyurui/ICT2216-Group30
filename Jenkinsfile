@@ -90,7 +90,17 @@ pipeline {
                     """
                 }
             }
-        }        
+        }
+	stage('OWASP Dependency-Check') {
+            steps {
+                dependencyCheck additionalArguments: '''
+                    --noupdate
+                    -o './'
+                    -s './'
+                    -f 'ALL'
+                    --prettyPrint''', odcInstallation: "${env.ODC}"
+            }
+        }
         stage('Check and Restart Nginx') {
             steps {
                 sshagent([env.SSH_CREDENTIALS]) {
@@ -114,16 +124,6 @@ pipeline {
                         "
                     """
                 }
-            }
-        }
-        stage('OWASP Dependency-Check') {
-            steps {
-                dependencyCheck additionalArguments: '''
-                    --noupdate
-                    -o './'
-                    -s './'
-                    -f 'ALL'
-                    --prettyPrint''', odcInstallation: "${env.ODC}"
             }
         }
     }
