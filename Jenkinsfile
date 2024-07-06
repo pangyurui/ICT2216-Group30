@@ -32,7 +32,14 @@ pipeline {
                         mkdir -p media &&
                         cd ${env.BACKEND_PATH}/media &&
                         mkdir -p organisation_images &&
-                        mkdir -p product_images
+                        mkdir -p product_images && 
+			sudo chmod -R 755 ${env.BACKEND_PATH}/assets &&
+                        sudo chown -R ${env.WWW_USER}:${env.WWW_USER} ${env.BACKEND_PATH}/assets &&
+                        sudo chmod -R 764 ${env.BACKEND_PATH}/media &&
+                        sudo chown -R ${env.REMOTE_USER}:${env.REMOTE_USER} ${env.BACKEND_PATH}/media && 
+			cd ${env.BACKEND_PATH} &&
+                        pkill gunicorn || true
+                        nohup gunicorn --workers 4 backend.wsgi:application > gunicorn.log 2>&1 &
                         "
                     """
                 }
@@ -47,46 +54,8 @@ pipeline {
                         npm install &&
                         npm install jwt-decode js-cookie qrcode.react dompurify &&
                         sudo npm run build
-                        "
-                    """
-                }
-            }
-        }
-        stage('Setting Permissions') {
-            steps {
-                sshagent([env.SSH_CREDENTIALS]) {
-                    sh """
-                        ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
-                        cd ${env.REMOTE_DIR} &&
-                        source ${env.VENV_PATH}/bin/activate &&
-                        export DJANGO_SECRET_KEY=\\"${env.DJANGO_SECRET_KEY}\\" &&
                         sudo chmod -R 755 ${env.FRONTEND_PATH}/build &&
-                        sudo chown -R ${env.WWW_USER}:${env.WWW_USER} ${env.FRONTEND_PATH}/build &&
-                        sudo chmod -R 755 ${env.BACKEND_PATH}/assets &&
-                        sudo chown -R ${env.WWW_USER}:${env.WWW_USER} ${env.BACKEND_PATH}/assets &&
-                        sudo chmod -R 764 ${env.BACKEND_PATH}/media &&
-                        sudo chown -R ${env.REMOTE_USER}:${env.REMOTE_USER} ${env.BACKEND_PATH}/media &&
-                        cd ${env.BACKEND_PATH} &&
-                        pkill gunicorn || true
-                        "
-                    """
-                }
-            }
-        }
-        stage('Starting Backend Services') {
-            steps {
-                sshagent([env.SSH_CREDENTIALS]) {
-                    sh """
-                        ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
-                        export DJANGO_SECRET_KEY=\\"${env.DJANGO_SECRET_KEY}\\" &&
-                        export DATABASE_NAME=\\"${env.DATABASE_NAME}\\" &&
-                        export DATABASE_USER=\\"${env.DATABASE_USER}\\" &&
-                        export DATABASE_PASSWORD=\\"${env.DATABASE_PASSWORD}\\" &&
-                        export DATABASE_HOST=\\"${env.DATABASE_HOST}\\" &&
-                        export DATABASE_PORT=\\"${env.DATABASE_PORT}\\" &&
-                        source ${env.VENV_PATH}/bin/activate &&
-                        cd ${env.BACKEND_PATH}
-                        nohup gunicorn --workers 4 backend.wsgi:application > gunicorn.log 2>&1 &
+                        sudo chown -R ${env.WWW_USER}:${env.WWW_USER} ${env.FRONTEND_PATH}/build			
                         "
                     """
                 }
@@ -115,7 +84,7 @@ pipeline {
                 }
             }
         }
-        stage('UI Testing') {
+        stage('UI and Integration Testing') {
             steps {
                 sshagent([env.SSH_CREDENTIALS]) {
                     sh """
@@ -123,18 +92,7 @@ pipeline {
                         cd ${env.REMOTE_DIR} &&
                         source ${env.VENV_PATH}/bin/activate &&
                         python testUi.py
-                        "
-                    """
-                }
-            }
-        }
-        stage('Integration Testing') {
-            steps {
-                sshagent([env.SSH_CREDENTIALS]) {
-                    sh """
-                        ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
                         cd ${env.BACKEND_PATH} &&
-                        source ${env.VENV_PATH}/bin/activate &&
                         export DJANGO_SECRET_KEY=\\"${env.DJANGO_SECRET_KEY}\\" &&
                         export DATABASE_NAME=\\"${env.DATABASE_NAME}\\" &&
                         export DATABASE_USER=\\"${env.DATABASE_USER}\\" &&
