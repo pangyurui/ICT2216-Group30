@@ -7,12 +7,10 @@ import { SearchContext } from "../../context/search-context";
 import "./shop.css";
 import Cookies from 'js-cookie'; // Import Cookies library
 
-
 export const Shop = () => {
   const { searchResults, setProducts, setSearchResults } = useContext(SearchContext);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
 
   useEffect(() => {
     axios.get('https://ict2216group30.store/api/products/')
@@ -27,7 +25,6 @@ export const Shop = () => {
       });
   }, [setProducts, setSearchResults]);
 
-
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -38,13 +35,13 @@ export const Shop = () => {
 
   return (
     <div className="shop">
-      <div className="shopTitle">Shop at Charity Central</div>
+      <div className="shopTitle">Welcome to Charity Central</div>
       <div className="view-organisations">
         <Link to="/organisations">
           <button className="view-organisations-button">View Our Partner Organisations</button>
         </Link>
       </div>
-      <SearchInput />
+      <SearchInput className="search-input" />
       <div className="products">
         {searchResults.length > 0 ? (
           searchResults.map(product => <Product key={product.id} data={product} />)

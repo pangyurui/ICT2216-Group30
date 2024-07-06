@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { axiosAuth } from '../../utils/axiosAuth';
+import { axiosAuth } from '../../../utils/axiosAuth';
 import Swal from 'sweetalert2';
 import './payments.css';
 

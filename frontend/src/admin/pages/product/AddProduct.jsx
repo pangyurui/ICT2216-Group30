@@ -157,10 +157,6 @@ const AddProduct = () => {
                         </select>
                 </div>
                 <div className="form-group">
-                    <label>Deleted At:</label>
-                    <input type="datetime-local" name="deletedAt" value={product.deletedAt} onChange={handleChange} />
-                </div>
-                <div className="form-group">
                     <button type="submit">Submit</button>
                 </div>
             </form>

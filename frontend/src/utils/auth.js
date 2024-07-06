@@ -1,5 +1,3 @@
-// auth.js
-
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 
@@ -38,7 +36,7 @@ const refreshToken = async () => {
     }
 
     try {
-        const response = await axios.post('/api/refresh-token', { refresh_token });
+        const response = await axios.post('https://ict2216group30.store/api/token/refresh/', { refresh_token });
         const { access_token } = response.data;
         localStorage.setItem('access_token', access_token);
         return access_token;

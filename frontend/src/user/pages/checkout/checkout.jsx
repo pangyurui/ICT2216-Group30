@@ -1,20 +1,18 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { axiosAuth } from '../../utils/axiosAuth';
+import { axiosAuth } from '../../../utils/axiosAuth';
 import { ShopContext } from "../../context/shop-context";
 import { CartItem } from "../cart/cart-item";
 import Swal from 'sweetalert2';
-import axios from 'axios';
 import './checkout.css';
 
 export const Checkout = () => {
-    //const [cartItems, setCartItems] = useState([]);
     const [paymentMethods, setPaymentMethods] = useState([]);
     const [addresses, setAddresses] = useState([]);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
     const [selectedAddress, setSelectedAddress] = useState('');
     const [orderCompleted, setOrderCompleted] = useState(false);
-    const { cartItems, products, getTotalCartAmount, fetchCartItems, removeAllItemsFromCart } = useContext(ShopContext);
+    const { cartItems, products, getTotalCartAmount, fetchCartItems } = useContext(ShopContext);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -22,15 +20,6 @@ export const Checkout = () => {
         fetchPaymentMethods();
         fetchAddresses();
     }, []);
-
-    // const fetchCartItems = async () => {
-    //     try {
-    //         const res = await axiosAuth.get('cart/cart-items/');
-    //         setCartItems(res.data);
-    //     } catch (err) {
-    //         console.error(err);
-    //     }
-    // };
 
     const totalAmount = getTotalCartAmount();
 
@@ -52,28 +41,6 @@ export const Checkout = () => {
         }
     };
 
-    // const handleCheckout = async () => {
-    //     if (!selectedPaymentMethod || !selectedAddress) {
-    //         alert('Please select a payment method and delivery address.');
-    //         return;
-    //     }
-
-    //     try {
-    //         const orderData = {
-    //             payment_method: selectedPaymentMethod,
-    //             delivery_address: selectedAddress,
-    //             items: cartItems.map(item => ({
-    //                 product_id: item.product.id,
-    //                 quantity: item.quantity,
-    //             })),
-    //         };
-    //         await axiosAuth.post('checkout/', orderData);
-    //         setOrderCompleted(true);
-    //     } catch (err) {
-    //         console.error(err);
-    //     }
-    // };
-
     const handleCheckout = async () => {
         if (!selectedPaymentMethod || !selectedAddress) {
             alert('Please select a payment method and delivery address.');
@@ -81,8 +48,17 @@ export const Checkout = () => {
         }
 
         try {
-            await removeAllItemsFromCart();
+            const items = Object.entries(cartItems).map(([itemId, itemData]) => ({
+                product_id: itemId,
+                quantity: itemData.quantity,
+            }));
+
+            const orderData = {
+                items
+            };
+            await axiosAuth.post('checkout/', orderData);
             setOrderCompleted(true);
+
             Swal.fire({
                 title: 'Thank you for your order!',
                 text: 'Your order has been placed successfully.',
@@ -110,6 +86,8 @@ export const Checkout = () => {
 
     return (
         <div className="checkout-container">
+            {totalAmount > 0 ? (
+                <div className="checkout-container">
             <h2>Checkout</h2>
             <div className="cart-items">
                 <h3>Cart Items</h3>
@@ -120,7 +98,7 @@ export const Checkout = () => {
                     }
                     return null;
                 })}
-                <h3>${totalAmount.toFixed(2)}</h3>
+                <h3>Subtotal: ${totalAmount.toFixed(2)}</h3>
             </div>
             <div className="payment-methods">
                 <h3>Select Payment Method</h3>
@@ -154,5 +132,9 @@ export const Checkout = () => {
             </div>
             <button className="complete-order-button" onClick={handleCheckout}>Complete Order</button>
         </div>
+        ) : (
+            <h1>Your Shopping Cart is Empty</h1>
+        )}
+    </div>
     );
 };

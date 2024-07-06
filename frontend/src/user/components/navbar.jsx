@@ -32,6 +32,7 @@ export const Navbar = ({ auth, logout }) => {
             <Link to="/account">Account</Link>
             <Link to="/payments">Payment Methods</Link>
             <Link to="/addresses">Addresses</Link>
+            <Link to="/orders">Orders</Link>
             <Link to="/" onClick={handleLogout}>Logout</Link>
           </div>
         ) : (

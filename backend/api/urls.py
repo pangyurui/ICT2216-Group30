@@ -1,13 +1,13 @@
 from django.urls import path
 from . import views
 from .views import ProductList, ProductDetail, CartItemListCreateView, ProductCreateView, LogoutView, \
-    CartItemRetrieveUpdateDestroyView, RegisterView, LoginView,CartAPIView,UserList, \
+    CartItemRetrieveUpdateDestroyView, RegisterView, LoginView, CartAPIView, UserList, \
     UserDetailView, UserUpdateView, UserDeleteView, ProductDeleteView, \
     ProductUpdateView, OrganisationCreateView, OrganisationRetrieveUpdateDestroyView, \
     OrganisationListView, ProductReviewListCreateView, ProductReviewRetrieveUpdateDestroyView, \
     TwoFactorSetupView, TwoFactorLoginView, UserPaymentListCreateView, UserPaymentRetrieveUpdateDestroyView, \
     UserAddressListCreateView, UserAddressRetrieveUpdateDestroyView, get_common_passwords, get_csrf_token, \
-    UserAccountView
+    UserAccountView, CheckoutView, OrderListView
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -35,12 +35,13 @@ urlpatterns = [
     path('payments/<int:pk>/', UserPaymentRetrieveUpdateDestroyView.as_view(), name='user_payment_detail'),
     path('addresses/', UserAddressListCreateView.as_view(), name='user_address_list_create'),
     path('addresses/<int:pk>/', UserAddressRetrieveUpdateDestroyView.as_view(), name='user_address_detail'),
+    path('checkout/', CheckoutView.as_view(), name='checkout'),
+    path('orders/', OrderListView.as_view(), name='order_list'),
     path('products/add/', ProductCreateView.as_view(), name='product-add'),
     path('products/delete/<int:pk>/', ProductDeleteView.as_view(), name='product-delete'),
     path('products/update/<int:pk>/', ProductUpdateView.as_view(), name='product-update'),
     # path('product-reviews/', views.ProductReviewListCreateView.as_view(), name='productreview-list'),
     # path('product-reviews/<int:pk>/', views.ProductReviewRetrieveUpdateDestroyView.as_view(), name='productreview-detail'),
-    path('products/<int:pk>/', ProductDetail.as_view(), name='product-detail'),
     path('products/<int:pk>/reviews/', ProductReviewListCreateView.as_view(), name='product-review-list'),
     path('products/reviews/<int:pk>/', ProductReviewRetrieveUpdateDestroyView.as_view(), name='product-review-detail'),
     path('two-factor-setup/', TwoFactorSetupView.as_view(), name='two-factor-setup'),

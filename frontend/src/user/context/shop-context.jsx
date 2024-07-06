@@ -308,32 +308,6 @@ export const ShopContextProvider = (props) => {
     }
   };
 
-  const removeAllItemsFromCart = async () => {
-      try {
-        const token = localStorage.getItem('access_token');
-        await Promise.all(Object.values(cartItems).map(cartItem =>
-          axios.delete(`https://ict2216group30.store/api/cart/cart-items/${cartItem.cartItemId}/`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'X-CSRFToken': csrfToken
-            }
-          })
-        ));
-
-        setCartItems(getDefaultCart(products));
-      } catch (error) {
-        console.error('Error removing all items from cart', error);
-        Swal.fire({
-          position: "top-end",
-          title: `Failed to remove all items from cart`,
-          timer: 1500,
-          icon: 'error',
-          showConfirmButton: false,
-        });
-      }
-  };
-
-
   const getTotalCartAmount = () => {
     return Object.entries(cartItems).reduce((total, [itemId, itemData]) => {
       const itemInfo = products.find(product => product.id === Number(itemId));
@@ -401,7 +375,6 @@ export const ShopContextProvider = (props) => {
     checkout,
     removeAllCartItemsByName,
     fetchCartItems,
-    removeAllItemsFromCart
   };
 
   return (

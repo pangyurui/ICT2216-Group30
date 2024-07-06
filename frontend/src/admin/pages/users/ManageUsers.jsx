@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './ManageUsers.css'; // Ensure the CSS file is correctly linked
+import Swal from 'sweetalert2';
 
 const ManageUsers = () => {
     const [users, setUsers] = useState([]);
@@ -14,7 +15,17 @@ const ManageUsers = () => {
 
     const fetchUsers = async () => {
         try {
-            const { data } = await axios.get('https://ict2216group30.store/api/users/');
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                Swal.fire('Authentication Error', 'No access token found. Please login again.', 'error');
+                return;
+            }
+            const { data } = await axios.get('https://ict2216group30.store/api/users/', {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                     'Authorization': `Bearer ${token}`
+                }
+            });
             setUsers(data);
             setLoading(false);
         } catch (error) {

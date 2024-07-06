@@ -129,10 +129,6 @@ const EditProduct = () => {
                 <label>Name:<input type="text" name="name" value={product.name} onChange={handleChange} required /></label>
                 <label>Description:<textarea name="description" value={product.description} onChange={handleChange} required /></label>
                 <label>Price:<input type="number" name="price" value={product.price} onChange={handleChange} required /></label>
-                <label>Category:<select name="categoryId" value={product.categoryId} onChange={handleChange} required>
-                    <option value="">Select a Category</option>
-                    {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select></label>
                 <label>Organisation:<select name="organisationId" value={product.organisationId} onChange={handleChange} required>
                     <option value="">Select an Organisation</option>
                     {organisations.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}

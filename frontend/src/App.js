@@ -3,26 +3,27 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from "r
 import { Navbar } from "./user/components/navbar";
 import AdminNavbar from "./admin/components/AdminNavbar";
 import { Shop } from "./user/pages/shop/shop";
-import { Contact } from "./user/pages/contact";
-import { AboutUs } from "./user/pages/aboutus";
+import { Contact } from "./user/pages/miscellaneous/contact";
+import { AboutUs } from "./user/pages/miscellaneous/aboutus";
 import { Cart } from "./user/pages/cart/cart";
 import { TwoFALogin } from "./user/pages/register/2fa";
 import { ProductPage } from "./user/pages/product/ProductPage";
 import { Register } from "./user/pages/register/register";
 import { Login } from "./user/pages/register/login";
-import { Account } from "./user/pages/account";
+import { Account } from "./user/pages/account/account";
 import { Payments } from "./user/pages/payment/payments";
 import { Addresses } from "./user/pages/address/addresses";
 import { Checkout } from "./user/pages/checkout/checkout";
+import { Orders } from "./user/pages/order/orders";
 import { ShopContextProvider } from "./user/context/shop-context";
 import { SearchProvider } from "./user/context/search-context";
-import { getAccessToken, clearAuth } from "./user/utils/auth";
-import {jwtDecode} from "jwt-decode";
+import { getAccessToken, clearAuth } from "./utils/auth";
+import { jwtDecode } from "jwt-decode";
 import { AdminOrganisation } from "./admin/pages/organisations/adminorganisation";
 import { ManageOrganisation } from "./admin/pages/organisations/manageorganisation";
 import { Organisation } from './user/pages/organisation/organisation';
 import axios from "axios";
-import useAutoLogout from './user/utils/autoLogout';
+import useAutoLogout from './utils/autoLogout';
 
 // Admin Pages
 import AdminDashboard from './admin/pages/dashboard/AdminDashboard';
@@ -53,6 +54,7 @@ const AppContent = ({ auth, logout, setAuth, hasLoggedOut, setHasLoggedOut }) =>
       <Route path="/payments" element={<Payments />} />
       <Route path="/addresses" element={<Addresses />} />
       <Route path="/checkout" element={<Checkout />} />
+      <Route path="/orders" element={<Orders />} />
       <Route path="/organisations" element={<Organisation />} />
       <Route path="/2fa" element={<TwoFALogin />} />
       <Route path="/aboutus" element={<AboutUs />} />

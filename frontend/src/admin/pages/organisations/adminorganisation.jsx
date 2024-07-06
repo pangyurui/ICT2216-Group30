@@ -32,7 +32,11 @@ export const AdminOrganisation = () => {
   const handleDelete = (id) => {
     // Add a confirmation dialog
     if (window.confirm("Are you sure you want to delete this organisation? This process cannot be undone.")) {
-      axios.delete(`https://ict2216group30.store/api/organisations/${id}/`)
+      axios.delete(`https://ict2216group30.store/api/organisations/${id}/`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        }
+      })
         .then(() => {
           alert('Organisation deleted successfully');
           fetchData(); // Re-fetch data to update the list after deletion
@@ -43,7 +47,6 @@ export const AdminOrganisation = () => {
         });
     }
   };
-
 
   function DeleteConfirmationModal({ isOpen, onConfirm, onCancel }) {
   if (!isOpen) return null;
@@ -94,7 +97,7 @@ export const AdminOrganisation = () => {
               <td>{org.created_at ? new Date(org.created_at).toLocaleString() : "Not available"}</td>
               <td>{org.modified_at ? new Date(org.modified_at).toLocaleString() : "Not available"}</td>
               <td>
-                <button className="edit-button" onClick={() => navigate(`/adminorganisation/${org.id}`)}>Edit</button>
+                <button className="edit-button" onClick={() => navigate(`/manageorganisation/${org.id}`)}>Edit</button>
                 <button className="delete-button" onClick={() => handleDelete(org.id)}>Delete</button>
               </td>
             </tr>

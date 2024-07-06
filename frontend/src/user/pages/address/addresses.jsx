@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { axiosAuth } from '../../utils/axiosAuth';
+import { axiosAuth } from '../../../utils/axiosAuth';
 import './addresses.css';
 
 export const Addresses = () => {

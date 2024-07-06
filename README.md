@@ -26,6 +26,12 @@
 # Initial Setup (for first time setup ONLY)
 Skip to the next section ("Run the Project") if you have completed the initial setup before.
 
+1. Navigate to the 'charitycentral' directory and run the following command:
+   > xcopy backend\backend\logger venv\Lib\site-packages\logger /E /I
+
+2. Navigate to venv\Lib\logger\middleware_logger.py and replace line 2 with:
+   > from logger.logging_library import log_exception, log_access
+
 1. Open MySQL Workbench.
    
 2. Setup a new connection and give it a connection name. The rest of the parameters can be left as default.
@@ -68,12 +74,13 @@ To run the project, open **two** terminal/cmd windows.
    ***ALWAYS run ALL 3 commands to ensure that there will be no conflicts in the DB schema!!***
 
 2. In the second window, navigate to the **frontend** directory and run the following commands:
-   > npm install  
+   > npm install
+   > npm install jwt-decode
    > npm start
    
    This will start the React development server.
 
-   Open your web browser and navigate to **http://localhost:3000/**.
+   Open your web browser and navigate to **http://localhost:3000/**. 
 
 
 ## References

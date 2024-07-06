@@ -7,15 +7,13 @@ from rest_framework import generics, status, permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.db import transaction, IntegrityError
-from .models import Product, Cart, CartItem, Organisation, User, ProductReview
-
 from django.db import transaction
 from .models import Product, Cart, CartItem, Organisation, User, ProductReview, \
-    UserPayment, UserAddress
+    UserPayment, UserAddress, Order
 from .serializers import ProductSerializer, CartItemSerializer, CartSerializer, \
     OrganisationSerializer, UserSerializer, LoginSerializer, \
     UserUpdateSerializer, ProductReviewSerializer, TwoFactorLoginVerification, \
-    UserPaymentSerializer, UserAddressSerializer
+    UserPaymentSerializer, UserAddressSerializer, CheckoutSerializer, OrderSerializer
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from django.http import JsonResponse
@@ -585,6 +583,23 @@ class CartAPIView(generics.RetrieveAPIView):
 
         serializer = self.get_serializer(cart)
         return Response(serializer.data)
+    
+class CheckoutView(generics.CreateAPIView):
+    serializer_class = CheckoutSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        order = serializer.save()
+        return Response({'message': 'Order completed successfully', 'order_id': order.id})
+
+class OrderListView(generics.ListAPIView):
+    serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user).order_by('-created_at')
 
 
 # Product view

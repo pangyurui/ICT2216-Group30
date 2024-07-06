@@ -42,7 +42,11 @@ const AdminDashboard = () => {
 
     const deleteProduct = (productId) => {
         if (window.confirm("Are you sure you want to delete this product? This action cannot be undone.")) {
-            axios.delete(`https://ict2216group30.store/api/products/delete/${productId}/`)
+            axios.delete(`https://ict2216group30.store/api/products/delete/${productId}/`, {
+                headers: {
+                  'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                }
+              })
                 .then(() => {
                     alert('Product deleted successfully');
                     setProducts(currentProducts => currentProducts.filter(p => p.id !== productId));

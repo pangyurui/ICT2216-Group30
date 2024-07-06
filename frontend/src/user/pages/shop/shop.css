@@ -12,6 +12,7 @@
   gap: 30px;
   padding: 20px;
   justify-content: center;
+  padding-right: 80px;
 }
 
 .product {
@@ -25,19 +26,26 @@
   flex-direction: column;
   align-items: center;
   transition: all 0.3s ease-in-out;
+  min-height: 400px;
 }
 
 .product img {
   width: 100%;
-  height: auto;
+  height: 200px;
+  object-fit: cover;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
+  margin-top: 10px;
 }
 
 .product .description {
   padding: 15px;
   text-align: center;
   font-size: 1.1rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .product:hover {
@@ -54,6 +62,7 @@
   cursor: pointer;
   transition: background 0.3s ease-in;
   margin-top: 10px;
+  margin-bottom: 20px;
 }
 
 .addToCartBttn:hover {
@@ -79,4 +88,8 @@
 
 .view-organisations-button:hover {
   background-color: #007BAA;
+}
+
+.search-input {
+  margin-top: 40px;
 }

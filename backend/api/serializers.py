@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Product, CartItem, Cart, Organisation, User, ProductReview, \
-    UserPayment, UserAddress
+    UserPayment, UserAddress, Order, OrderItem
 import pyotp
 import os
 import hashlib
@@ -93,56 +93,6 @@ class LoginSerializer(serializers.Serializer):
         return data
 
 
-# class ProductSerializer(serializers.ModelSerializer):
-#     organisation_id = serializers.PrimaryKeyRelatedField(
-#         queryset=Organisation.objects.all(),
-#         source='organisation',
-#         write_only=False,
-#         required=False,  # If not always required
-#         allow_null=True,  # If null is allowed
-#     )
-
-#     class Meta:
-#         model = Product
-#         fields = (
-#             'id', 'name', 'description', 'price', 'image', 'organisation_id', 'created_at',
-#             'modified_at',
-#             'deleted_at')
-
-#     def create(self, validated_data):
-#         # Extracting and handling the relationships separately if needed
-#         organisation = validated_data.pop('organisation', None)
-#         product = Product.objects.create(organisation=organisation, **validated_data)
-#         return product
-
-#     def update(self, instance, validated_data):
-#         # update logic for your fields
-#         instance.name = validated_data.get('name', instance.name)
-#         instance.description = validated_data.get('description', instance.description)
-#         instance.price = validated_data.get('price', instance.price)
-#         instance.organisation = validated_data.get('organisation', instance.organisation)
-#         instance.save()
-#         return instance
-
-#     def validate_deleted_at(self, value):
-#         if isinstance(value, datetime.datetime):
-#             return value  # Return the datetime object if it's already a datetime
-
-#         if value in ['null', None, '']:  # Handle 'null' as a string, actual None, and empty string
-#             return None
-
-#         try:
-#             # Convert string to datetime object
-#             return datetime.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%fZ')
-#         except ValueError:
-#             raise serializers.ValidationError(
-#                 "Datetime has wrong format. Use this format instead: YYYY-MM-DDThh:mm:ss.ssssssZ")
-
-#     def validate_image(self, value):
-#         if value.size > 1024 * 1024 * 5:  # limit to 5MB
-#             raise serializers.ValidationError("Image file too large ( > 5MB )")
-#         return value
-
 class ProductSerializer(serializers.ModelSerializer):
     # category_id = serializers.PrimaryKeyRelatedField(
     #     queryset=ProductCategory.objects.all(),
@@ -216,6 +166,19 @@ class CartSerializer(serializers.ModelSerializer):
         model = Cart
         fields = '__all__'
 
+class OrderItemSerializer(serializers.ModelSerializer):
+    product = ProductSerializer()
+
+    class Meta:
+        model = OrderItem
+        fields = ['id', 'product', 'quantity']
+
+class OrderSerializer(serializers.ModelSerializer):
+    items = OrderItemSerializer(many=True)
+
+    class Meta:
+        model = Order
+        fields = ['id', 'total', 'created_at', 'items']
 
 class OrganisationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -235,6 +198,30 @@ class ProductReviewSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
         return super(ProductReviewSerializer, self).create(validated_data)
+    
+class CheckoutSerializer(serializers.Serializer):
+    items = serializers.ListField(child=serializers.DictField())
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        items = validated_data['items']
+
+        order = Order.objects.create(user=user, total=0)
+        total = 0
+
+        for item in items:
+            product_id = item['product_id']
+            quantity = item['quantity']
+            product = Product.objects.get(id=product_id)
+            order_item = OrderItem.objects.create(order=order, product=product, quantity=quantity)
+            total += product.price * quantity
+
+        order.total = total
+        order.save()
+
+        CartItem.objects.filter(cart__user=user).delete()
+
+        return order
 
 
 class TwoFactorSetupSerializer(serializers.Serializer):
