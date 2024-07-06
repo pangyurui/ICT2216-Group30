@@ -65,7 +65,8 @@ class BaseTestCase(TestCase):
         return True
 
 class UserTests(BaseTestCase):
-    def test_user_registration(self):
+    @patch('api.views.RegisterView.get_common_passwords', return_value=[])
+    def test_user_registration(self, mock_get_common_passwords):
         new_user_data = {
             'username': 'newtestuser',
             'email': 'newtestuser@example.com',
