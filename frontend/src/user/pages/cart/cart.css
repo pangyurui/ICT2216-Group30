@@ -11,38 +11,96 @@
   right: 8px;
   border-radius: 50%;
   padding: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.removeIcon:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+.cart-items {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: #f8f8f8;
 }
 .cartItem {
-  width: 700px;
-  height: 250px;
+  width: 100%;
+  max-width: 700px;
+  height: auto;
   display: flex;
-  
   align-items: center;
   box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.2);
   border-radius: 25px;
   margin: 30px;
+  padding: 20px;
+  background-color: white;
   position: relative;
+  transition: transform 0.3s, box-shadow 0.3s;
 }
+
+.cartItem:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.cartItem img {
+  width: 150px;
+  height: auto;
+  border-radius: 15px;
+  margin-right: 20px;
+}
+
+.description {
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - 150px);
+  font-size: 16px;
+}
+
 .descriptionHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: relative;
 }
-.cartItem img {
-  width: 200px;
+
+.descriptionHeader p {
+  margin: 0;
+  font-weight: bold;
 }
 
-.cartItem .description {
-  width: 100%;
-  font-size: 30px;
+.countHandler {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
 }
 
+.countHandler button {
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.countHandler button:hover {
+  background-color: #555;
+}
 
 .countHandler input {
-  width: 40px;
+  width: 50px;
   text-align: center;
   font-weight: bolder;
+  margin: 0 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px;
 }
 
 .checkout button {
@@ -54,4 +112,9 @@
   border-radius: 8px;
   margin: 10px;
   cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.checkout button:hover {
+  background-color: rgb(50, 50, 50);
 }
