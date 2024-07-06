@@ -2,15 +2,6 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
-            steps {
-                checkout([$class: 'GitSCM', 
-                          branches: [[name: '*/main']], 
-                          doGenerateSubmoduleConfigurations: false, 
-                          extensions: [[$class: 'DisableRemotePoll']], 
-                          userRemoteConfigs: [[credentialsId: env.GIT_CREDENTIALS, url: env.GIT_REPO_URL]]])
-            }
-        }
         stage('Upload Files to Remote Server') {
             steps {
                 sshagent([env.SSH_CREDENTIALS]) {
