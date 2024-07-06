@@ -5,6 +5,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 import pyotp
 import time
 import random
@@ -33,17 +35,22 @@ class UITest(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        # Set up WebDriver (Chrome in this example)
-        cls.driver = webdriver.Chrome()  # Ensure chromedriver is in PATH or provide the correct path
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")  # Run in headless mode
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--remote-debugging-port=9222")
+    
+        cls.driver = webdriver.Chrome(options=chrome_options)
         cls.driver.implicitly_wait(10)
         cls.driver.maximize_window()
-        cls.host = settings.CSRF_TRUSTED_ORIGINS[2]
+        cls.host = 'https://ict2216group30.store'
         cls.qr_code_image_path = 'qrcode.png'
         cls.totp = None
         cls.username = generate_random_username()
         cls.password = generate_random_password()
         cls.email = generate_random_email()
-
+        
     @classmethod
     def tearDownClass(cls):
         cls.driver.quit()
