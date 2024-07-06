@@ -71,6 +71,24 @@ pipeline {
                     """
                 }
             }
+        }
+	stage('Integration Testing') {
+            steps {
+                sshagent([env.SSH_CREDENTIALS]) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
+                        cd ${env.BACKEND_PATH} &&
+                        export DJANGO_SECRET_KEY=\\"${env.DJANGO_SECRET_KEY}\\" &&
+                        export DATABASE_NAME=\\"${env.DATABASE_NAME}\\" &&
+                        export DATABASE_USER=\\"${env.DATABASE_USER}\\" &&
+                        export DATABASE_PASSWORD=\\"${env.DATABASE_PASSWORD}\\" &&
+                        export DATABASE_HOST=\\"${env.DATABASE_HOST}\\" &&
+                        export DATABASE_PORT=\\"${env.DATABASE_PORT}\\" &&
+                        python manage.py test api.tests
+                        "
+                    """
+                }
+            }
         }        
         stage('Check and Restart Nginx') {
             steps {
@@ -84,7 +102,7 @@ pipeline {
                 }
             }
         }
-        stage('UI and Integration Testing') {
+        stage('UI Testing') {
             steps {
                 sshagent([env.SSH_CREDENTIALS]) {
                     sh """
@@ -92,14 +110,6 @@ pipeline {
                         cd ${env.REMOTE_DIR} &&
                         source ${env.VENV_PATH}/bin/activate &&
                         python testUi.py
-                        cd ${env.BACKEND_PATH} &&
-                        export DJANGO_SECRET_KEY=\\"${env.DJANGO_SECRET_KEY}\\" &&
-                        export DATABASE_NAME=\\"${env.DATABASE_NAME}\\" &&
-                        export DATABASE_USER=\\"${env.DATABASE_USER}\\" &&
-                        export DATABASE_PASSWORD=\\"${env.DATABASE_PASSWORD}\\" &&
-                        export DATABASE_HOST=\\"${env.DATABASE_HOST}\\" &&
-                        export DATABASE_PORT=\\"${env.DATABASE_PORT}\\" &&
-                        python manage.py test api.tests
                         "
                     """
                 }
