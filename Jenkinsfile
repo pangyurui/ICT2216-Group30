@@ -11,7 +11,7 @@ pipeline {
                 }
             }
         }
-        stage('Setup Environment and Install Dependencies') {
+        stage('Build Backend for Production') {
             steps {
                 sshagent([env.SSH_CREDENTIALS]) {
                     sh """
@@ -73,17 +73,6 @@ pipeline {
                 }
             }
         }
-        stage('Copy and Overwrite Logger File') {
-            steps {
-                sshagent([env.SSH_CREDENTIALS]) {
-                    sh """
-                        ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
-                        cp -rf ${env.BACKEND_PATH}/backend/logger ${env.VENV_PATH}/lib/python3.12/site-packages
-                        "
-                    """
-                }
-            }
-        }
         stage('Starting Backend Services') {
             steps {
                 sshagent([env.SSH_CREDENTIALS]) {
@@ -103,6 +92,17 @@ pipeline {
                 }
             }
         }
+        stage('Copy and Overwrite Logger File') {
+            steps {
+                sshagent([env.SSH_CREDENTIALS]) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
+                        cp -rf ${env.BACKEND_PATH}/backend/logger ${env.VENV_PATH}/lib/python3.12/site-packages
+                        "
+                    """
+                }
+            }
+        }        
         stage('Check and Restart Nginx') {
             steps {
                 sshagent([env.SSH_CREDENTIALS]) {
