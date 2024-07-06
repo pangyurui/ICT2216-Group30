@@ -84,6 +84,7 @@ pipeline {
                         export DATABASE_PASSWORD=\\"${env.DATABASE_PASSWORD}\\" &&
                         export DATABASE_HOST=\\"${env.DATABASE_HOST}\\" &&
                         export DATABASE_PORT=\\"${env.DATABASE_PORT}\\" &&
+			source ${env.VENV_PATH}/bin/activate &&
                         python manage.py test api.tests
                         "
                     """
