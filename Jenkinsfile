@@ -145,6 +145,11 @@ pipeline {
                         cd ${env.BACKEND_PATH} &&
                         source ${env.VENV_PATH}/bin/activate &&
                         export DJANGO_SECRET_KEY=\\"${env.DJANGO_SECRET_KEY}\\" &&
+                        export DATABASE_NAME=\\"${env.DATABASE_NAME}\\" &&
+                        export DATABASE_USER=\\"${env.DATABASE_USER}\\" &&
+                        export DATABASE_PASSWORD=\\"${env.DATABASE_PASSWORD}\\" &&
+                        export DATABASE_HOST=\\"${env.DATABASE_HOST}\\" &&
+                        export DATABASE_PORT=\\"${env.DATABASE_PORT}\\" &&
                         python manage.py test api.tests
                         "
                     """
