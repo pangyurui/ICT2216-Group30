@@ -351,7 +351,7 @@ class RegisterView(generics.CreateAPIView):
 
     def get_common_passwords(self):
         try:
-            response = requests.get('http://127.0.0.1:8000/api/common-passwords/')
+            response = requests.get('https://ict2216group30.store/api/common-passwords/')
             response.raise_for_status()  # Will raise an HTTPError for bad responses
             return response.json()
         except requests.RequestException as e:
