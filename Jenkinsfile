@@ -144,6 +144,7 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
                         cd ${env.BACKEND_PATH} &&
                         source ${env.VENV_PATH}/bin/activate &&
+                        export DJANGO_SECRET_KEY=\\"${env.DJANGO_SECRET_KEY}\\" &&
                         python manage.py test api.tests
                         "
                     """
