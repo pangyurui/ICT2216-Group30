@@ -35,7 +35,7 @@ pipeline {
                         mkdir -p product_images && 
 			sudo chmod -R 755 ${env.BACKEND_PATH}/assets &&
                         sudo chown -R ${env.WWW_USER}:${env.WWW_USER} ${env.BACKEND_PATH}/assets &&
-                        sudo chmod -R 764 ${env.BACKEND_PATH}/media &&
+                        sudo chmod -R 711 ${env.BACKEND_PATH}/media &&
                         sudo chown -R ${env.REMOTE_USER}:${env.REMOTE_USER} ${env.BACKEND_PATH}/media && 
 			cd ${env.BACKEND_PATH} &&
                         pkill gunicorn || true
