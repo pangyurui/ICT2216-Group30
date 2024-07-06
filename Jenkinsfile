@@ -38,7 +38,10 @@ pipeline {
                         python3 manage.py makemigrations api &&
                         python3 manage.py migrate &&
                         python3 manage.py collectstatic --noinput &&
-                        mkdir -p media
+                        mkdir -p media &&
+                        cd ${env.BACKEND_PATH}/media &&
+                        mkdir -p organisation_images &&
+                        mkdir -p product_images
                         "
                     """
                 }
@@ -70,8 +73,8 @@ pipeline {
                         sudo chown -R ${env.WWW_USER}:${env.WWW_USER} ${env.FRONTEND_PATH}/build &&
                         sudo chmod -R 755 ${env.BACKEND_PATH}/assets &&
                         sudo chown -R ${env.WWW_USER}:${env.WWW_USER} ${env.BACKEND_PATH}/assets &&
-                        sudo chmod -R 755 ${env.BACKEND_PATH}/media &&
-                        sudo chown -R ${env.WWW_USER}:${env.WWW_USER} ${env.BACKEND_PATH}/media &&
+                        sudo chmod -R 764 ${env.BACKEND_PATH}/media &&
+                        sudo chown -R ${env.REMOTE_USER}:${env.REMOTE_USER} ${env.BACKEND_PATH}/media &&
                         cd ${env.BACKEND_PATH} &&
                         pkill gunicorn || true
                         "
@@ -116,6 +119,32 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
                         sudo nginx -t &&
                         sudo systemctl restart nginx
+                        "
+                    """
+                }
+            }
+        }
+        stage('UI Testing') {
+            steps {
+                sshagent([env.SSH_CREDENTIALS]) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
+                        cd ${env.REMOTE_DIR} &&
+                        source ${env.VENV_PATH}/bin/activate &&
+                        python testUi.py
+                        "
+                    """
+                }
+            }
+        }
+        stage('Integration Testing') {
+            steps {
+                sshagent([env.SSH_CREDENTIALS]) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${env.REMOTE_USER}@${env.REMOTE_HOST} "
+                        cd ${env.BACKEND_PATH} &&
+                        source ${env.VENV_PATH}/bin/activate &&
+                        python manage.py test api.tests
                         "
                     """
                 }
