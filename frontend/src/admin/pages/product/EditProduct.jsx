@@ -16,7 +16,6 @@ const EditProduct = () => {
         existingImageUrl: ''
     });
     // const [imagePreview, setImagePreview] = useState('');  // State to hold image preview URL
-    const [categories, setCategories] = useState([]);
     const [organisations, setOrganisations] = useState([]);
     const { id } = useParams();
     const navigate = useNavigate();
@@ -40,10 +39,7 @@ const EditProduct = () => {
             })
             .catch(error => console.error('Error fetching product details:', error));
 
-        // Fetch categories and organisations
-        axios.get(`https://ict2216group30.store/api/categories/`)
-            .then(res => setCategories(res.data))
-            .catch(err => console.error('Error fetching categories:', err));
+        // Fetch organisations
 
         axios.get(`https://ict2216group30.store/api/organisations/`)
             .then(res => setOrganisations(res.data))

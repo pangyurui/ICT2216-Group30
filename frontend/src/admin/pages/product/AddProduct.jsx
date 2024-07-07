@@ -16,15 +16,10 @@ const AddProduct = () => {
         organisationId: ''
     });
  
-    // const [categories, setCategories] = useState([]);
     const [organisations, setOrganisations] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
-        // // Fetch categories
-        // axios.get('https://ict2216group30.store/api/categories/')
-        //     .then(response => setCategories(response.data))
-        //     .catch(error => console.error('Error fetching categories:', error));
 
         // Fetch organisations
         axios.get('https://ict2216group30.store/api/organisations/')
@@ -129,24 +124,6 @@ const AddProduct = () => {
                     <input type="text" name="price" value={product.price} onChange={handleChange} required />
                 </div>
                 
-                {/* <div className="form-group">
-                    <label>Category:</label>
-                    <input type="text" name="categoryId" value={product.categoryId} onChange={handleChange} required />
-                </div>
-                <div className="form-group">
-                    <label>Organisation:</label>
-                    <input type="text" name="organisationId" value={product.organisationId} onChange={handleChange} required />
-                </div> */}
-
-                {/* <div className="form-group">
-                    <label>Category:</label>
-                        <select name="categoryId" onChange={handleChange}>
-                            <option value="">Select a Category</option>
-                            {categories.map(category => (
-                                <option key={category.id} value={category.id}>{category.name}</option>
-                            ))}
-                        </select>
-                </div> */}
                 <div className="form-group">
                     <label>Organisation:</label>
                         <select name="organisationId" onChange={handleChange}>

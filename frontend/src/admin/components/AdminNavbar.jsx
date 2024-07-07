@@ -36,10 +36,7 @@ const AdminNavbar = ({ logout }) => {
           <FolderNotchOpen size={30} />
           Manage Organisations
         </Link>
-        {/* <Link to="/adminorganisation">
-          <FolderNotchOpen size={30} />
-          Manage Categories
-        </Link> */}
+        
       </div>
       <Link to="/" className="logout-link" onClick={handleLogout}>
         Logout
