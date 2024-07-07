@@ -99,7 +99,7 @@ export const ProductPage = () => {
         product: id, 
     };
 
-    axios.post(`http://127.0.0.1:8000/api/products/${id}/reviews/`, formData, {
+    axios.post(`https://ict2216group30.store/api/products/${id}/reviews/`, formData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',

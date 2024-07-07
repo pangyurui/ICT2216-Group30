@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
-const useAutoLogout = (logout, timeout = 10000, hasLoggedOut, setHasLoggedOut) => {
+const useAutoLogout = (logout, timeout = 60000, hasLoggedOut, setHasLoggedOut) => {
   const [lastActivity, setLastActivity] = useState(Date.now());
   const navigate = useNavigate();
 
