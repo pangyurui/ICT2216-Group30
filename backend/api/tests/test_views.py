@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 from unittest.mock import patch
-from api.models import User, Product, Organisation, Cart, CartItem
+from api.models import User
 import json
 
 class BaseTestCase(TestCase):
@@ -32,7 +32,7 @@ class BaseTestCase(TestCase):
         with patch('pyotp.TOTP.verify', return_value=True), \
              patch('builtins.input', return_value='123456'), \
              patch('qrcode.QRCode.print_ascii', return_value=None):  # Mock the QR code printing
-                cls.superuser = User.objects.create_superuser(**cls.superuser_data)
+            cls.superuser = User.objects.create_superuser(**cls.superuser_data)
 
     def setUp(self):
         self.client = APIClient()  # Ensure APIClient is used here
@@ -105,8 +105,8 @@ class OrganisationTests(BaseTestCase):
         organisation_data = {
             'name': 'Test Organisation',
             'desc': 'A test organisation',
-            'created_at': '2024-07-06T00:00:00Z',
-            'modified_at': '2024-07-06T00:00:00Z'
+            'created_at': '2024-07-05 16:55:49.251618',
+            'modified_at': '2024-07-05 16:55:49.251618'
         }
         response = self.client.post(reverse('organisation-create'), data=organisation_data)
         print("Admin create organisation response:", response.json())
@@ -121,8 +121,8 @@ class OrganisationTests(BaseTestCase):
         organisation_data = {
             'name': 'Test Organisation',
             'desc': 'A test organisation',
-            'created_at': '2024-07-06T00:00:00Z',
-            'modified_at': '2024-07-06T00:00:00Z'
+            'created_at': '2024-07-05 16:55:49.251618',
+            'modified_at': '2024-07-05 16:55:49.251618'
         }
         response = self.client.post(reverse('organisation-create'), data=organisation_data)
         print("Normal user create organisation response:", response.json())
