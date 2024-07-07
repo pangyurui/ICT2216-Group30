@@ -108,8 +108,6 @@ class UserAddress(models.Model):
     modified_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
 
-    session_token = models.CharField(max_length=255, null=True, blank=True)
-
     def __str__(self):
         return f"{self.address_line1}, {self.city}, {self.country}"
     
