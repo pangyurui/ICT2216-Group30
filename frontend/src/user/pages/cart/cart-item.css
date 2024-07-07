@@ -1,0 +1,14 @@
+.countHandler {
+    display: flex;
+    align-items: center;
+  }
+  
+  .countButton {
+    margin: 0 10px; /* Adjust the spacing as needed */
+  }
+  
+  .quantityDisplay {
+    min-width: 30px; /* Adjust width as needed to ensure proper spacing */
+    text-align: center;
+  }
+  

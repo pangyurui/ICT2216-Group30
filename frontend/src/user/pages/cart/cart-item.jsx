@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { ShopContext } from "../../context/shop-context";
 import { X } from "phosphor-react";
+import "./cart-item.css";
 
 export const CartItem = (props) => {
   const { id, quantity, productDetails } = props.data;
@@ -19,11 +20,12 @@ export const CartItem = (props) => {
           <X size={24} className="removeIcon" onClick={() => removeAllCartItemsByName(name)} />
         </div>
         <p> Price: ${price}</p>
-        <p> Quantity: {quantity}</p>
+        
         <div className="countHandler">
-          <button onClick={() => removeFromCart(id)}> - </button>
-          <span>{quantity}</span>
-          <button onClick={() => addToCartQuantity(id)}> + </button>
+        <p>Quantity
+        <button className="countButton" onClick={() => removeFromCart(id)}> - </button>
+        <span className="quantityDisplay">{quantity}</span>
+        <button className="countButton" onClick={() => addToCartQuantity(id)}> + </button></p>
         </div>
       </div>
     </div>
