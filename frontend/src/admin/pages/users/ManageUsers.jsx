@@ -26,6 +26,7 @@ const ManageUsers = () => {
                      'Authorization': `Bearer ${token}`
                 }
             });
+            
             setUsers(data);
             setLoading(false);
         } catch (error) {
@@ -37,6 +38,7 @@ const ManageUsers = () => {
 
     const handleDelete = (userId) => {
         // Add a confirmation dialog
+        const token = localStorage.getItem('access_token');
         if (window.confirm("Are you sure you want to delete this User? This process cannot be undone.")) {
           axios.delete(`https://ict2216group30.store/api/users/${userId}/`, {
             headers: { 'Content-Type': 'multipart/form-data',
