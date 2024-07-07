@@ -38,7 +38,11 @@ const ManageUsers = () => {
     const handleDelete = (userId) => {
         // Add a confirmation dialog
         if (window.confirm("Are you sure you want to delete this User? This process cannot be undone.")) {
-          axios.delete(`https://ict2216group30.store/api/users/${userId}/`)
+          axios.delete(`https://ict2216group30.store/api/users/${userId}/`, {
+            headers: { 'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${token}`
+             }
+        })
             .then(() => {
               alert('Users deleted successfully');
               setUsers(users.filter(user => user.id !== userId));

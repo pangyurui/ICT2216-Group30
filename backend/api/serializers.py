@@ -6,7 +6,6 @@ import os
 import hashlib
 import datetime
 
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -51,6 +50,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             salt = instance.salt  # Assuming salt is stored with user model
             instance.password = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), bytes.fromhex(salt),
                                                     100000).hex()
+
         return super().update(instance, validated_data)
     
 
