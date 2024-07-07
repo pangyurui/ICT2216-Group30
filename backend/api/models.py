@@ -160,7 +160,7 @@ class Product(models.Model):
         return self.name
     
 class ProductReview(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
     title = models.CharField(max_length=255)
     desc = models.CharField(max_length=255)
     rating = models.PositiveIntegerField(default=1)
@@ -171,7 +171,7 @@ class ProductReview(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
 
     def __str__(self):
-        return f"{self.title} by {self.user.first_name} {self.user.last_name}"
+        return f"{self.title} by {self.user.username}"
 
 
 

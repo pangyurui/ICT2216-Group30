@@ -1,0 +1,24 @@
+.star-rating {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .star-rating .star {
+    font-size: 2rem;
+    color: #ffd700; /* Gold color for stars */
+  }
+  
+  .star-rating .on .star {
+    color: #ffd700; /* Filled star color */
+  }
+  
+  .star-rating .off .star {
+    color: #ccc; /* Empty star color */
+  }
+  
+  .star-rating button {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  

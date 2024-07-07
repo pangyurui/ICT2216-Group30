@@ -606,7 +606,7 @@ class OrderListView(generics.ListAPIView):
 
 # Product view
 class ProductDetail(generics.RetrieveAPIView):
-    queryset = Product.objects.all()
+    queryset = Product.objects.all().prefetch_related('reviews')  # Ensures reviews are fetched efficiently
     serializer_class = ProductSerializer
 
 class ProductList(generics.ListAPIView):
@@ -803,7 +803,7 @@ class OrganisationRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIVie
 
 class ProductReviewListCreateView(generics.ListCreateAPIView):
     serializer_class = ProductReviewSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly] 
 
     def get_queryset(self):
         product_id = self.kwargs['pk']
@@ -812,6 +812,13 @@ class ProductReviewListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         product_id = self.kwargs['pk']
         product = get_object_or_404(Product, id=product_id)
+
+        # To ensure that users only able to review ONCE per product
+        # if ProductReview.objects.filter(product=product, user=self.request.user).exists():
+
+        #     messages.error(self.request, 'You have already reviewed this product.')
+        #     raise ValidationError('You have already reviewed this product.')
+        
         serializer.save(user=self.request.user, product=product)
 
 

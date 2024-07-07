@@ -62,3 +62,80 @@
   height: auto;
   margin-top: 10px;
 }
+
+.leaveReviewButton {
+  padding: 10px 20px;
+  background-color: #5c67f2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.leaveReviewButton:hover {
+  background-color: #4a54e1;
+}
+
+.reviewFormContainer {
+  width: 100%;
+  padding: 20px;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin-top: 20px;
+}
+
+.reviewForm {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.reviewForm label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.reviewForm input[type="text"],
+.reviewForm textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box; /* Makes sure padding doesn't affect width */
+}
+
+.reviewForm input[type="number"] {
+  width: 100px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.reviewForm textarea {
+  height: 100px;
+  resize: vertical; /* Allows vertical resize only */
+}
+
+.reviewForm button {
+  padding: 10px 20px;
+  background-color: #5c67f2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.reviewForm button:hover {
+  background-color: #4a54e1;
+}
+
+.notification {
+  color: red;
+  font-weight: bold;
+  margin-top: 10px;
+}

@@ -92,8 +92,21 @@ class LoginSerializer(serializers.Serializer):
         data['user'] = user
         return data
 
+class ProductReviewSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())  # Automatically set user to the current user
+    class Meta:
+        model = ProductReview
+        fields = '__all__'
+        extra_kwargs = {
+            'image': {'required': False, 'allow_null': True}
+        }
+
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user
+        return super(ProductReviewSerializer, self).create(validated_data)
 
 class ProductSerializer(serializers.ModelSerializer):
+    reviews = ProductReviewSerializer(many=True, read_only=True)
     # category_id = serializers.PrimaryKeyRelatedField(
     #     queryset=ProductCategory.objects.all(),
     #     source='category',
@@ -114,7 +127,7 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'name', 'description', 'price', 'image', 'organisation_id', 'created_at',
             'modified_at',
-            'deleted_at')
+            'deleted_at', 'reviews')
 
     def create(self, validated_data):
         # Extracting and handling the relationships separately if needed
