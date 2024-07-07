@@ -929,8 +929,47 @@ class TwoFactorSetupView(generics.GenericAPIView):
         return Response( status=status.HTTP_200_OK)
 
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    authentication_classes = [JWTAuthentication]
+    def get(self, request, *args, **kwargs):
+        jwt_authenticator = JWTAuthentication()
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            raise AuthenticationFailed('Authorization header is missing')
+
+        try:
+            token_str = auth_header.split()[1]
+            validated_token = jwt_authenticator.get_validated_token(token_str)
+            is_super_user = validated_token.get('is_superuser')
+            if not is_super_user:
+                raise AuthenticationFailed('You cannot perform this action')
+
+            # If superuser, proceed to get the user list
+            return self.list(request, *args, **kwargs)
+
+        except (User.DoesNotExist, IndexError, KeyError):
+            raise AuthenticationFailed('Invalid token or user not found')
+    
+    def delete(self, request, *args, **pk):
+        jwt_authenticator = JWTAuthentication()
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            raise AuthenticationFailed('Authorization header is missing')
+
+        try:
+            token_str = auth_header.split()[1]
+            validated_token = jwt_authenticator.get_validated_token(token_str)
+            is_super_user = validated_token.get('is_superuser')
+            if not is_super_user:
+                raise AuthenticationFailed('You cannot perform this action')
+            else:
+                user = self.get_object()
+                user.delete()
+                return Response({"message": "User deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        except (User.DoesNotExist, IndexError, KeyError):
+            raise AuthenticationFailed('Invalid token or user not found')
 
 def get_common_passwords(request):
     file_path = os.path.join(os.path.dirname(__file__), '..', '..', 'frontend', 'src', 'user', 'pages', 'register', '1000-most-common-passwords.txt')
