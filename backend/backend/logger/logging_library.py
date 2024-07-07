@@ -83,42 +83,46 @@ def get_formatted_time():
 def log_access(request, response, page_name):
     level = "INFO"
     ip_address = get_ip_address(request)
+    username = request.user.username if request.user.is_authenticated else '-'
     access_time = get_formatted_time()
     response_status = response.status_code
     request_method = request.method
     user_agent = request.headers.get('User-Agent', '-')
     content_length = len(response.content)
-    formatted_message = f'{access_time} {ip_address} [{level}] "{request_method} {page_name} " {response_status} {content_length} "{user_agent}"\n'
+    formatted_message = f'{access_time} {ip_address} [{level}] {username} "{request_method} {page_name} " {response_status} {content_length} "{user_agent}"\n'
     log_message(formatted_message)
 
 
 def log_access_register(request, page_name):
     level = "INFO"
     ip_address = get_ip_address(request)
+    username = request.user.username if request.user.is_authenticated else '-'
     access_time = get_formatted_time()
     request_method = request.method
     user_agent = request.headers.get('User-Agent', '-')
-    content_length = len(request.body)
-    formatted_message = f'{access_time} {ip_address} [{level}] "{request_method} {page_name} " "{request.body.decode("utf-8")}" {content_length} "{user_agent}"\n'
+    content_length = len(request.content)
+    formatted_message = f'{access_time} {ip_address} [{level}] {username} "{request_method} {page_name} " "{request.body.decode("utf-8")}" {content_length} "{user_agent}"\n'
     log_message(formatted_message)
 
 
 def log_access_message(request, message, level):
     ip_address = get_ip_address(request)
     access_time = get_formatted_time()
+    username = request.user.username if request.user.is_authenticated else '-'
     request_method = request.method
     user_agent = request.headers.get('User-Agent', '-')
-    content_length = len(request.body)
-    formatted_message = f'{access_time} {ip_address} [{level}] "{request_method} {message} " "{request.body.decode("utf-8")}" {content_length} "{user_agent}"\n'
+#    content_length = len(request.content)
+    formatted_message = f'{access_time} {ip_address} [{level}] {username} "{request_method} {message} " "{user_agent}"\n'
     log_message(formatted_message)
 
 
 def log_exception(request, exception):
     level = "ERROR"
     ip_address = get_ip_address(request)
+    username = request.user.username if request.user.is_authenticated else '-'
     access_time = get_formatted_time()
     request_method = request.method
     user_agent = request.headers.get('User-Agent', '-')
-    content_length = len(request.body)
-    formatted_message = f'{access_time} {ip_address} [{level}] "{request_method} {request.path} " "Exception: {exception}" {content_length} "{user_agent}"\n'
+    #content_length = len(request.content)
+    formatted_message = f'{access_time} {ip_address} [{level}] {username} "{request_method} {request.path} " "Exception: {exception}"  "{user_agent}"\n'
     log_message(formatted_message)

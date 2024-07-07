@@ -108,7 +108,7 @@ def OrganisationCreateView(request):
                     params = [org_name, org_desc, image_path, org_createdat, org_modifiedat]
 
                     cursor.execute(sql, params)
-
+                    logging_library.log_access_message(request, str(org_name) + " Created", 'ORGANISATION_CREATION')
                 return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
             else:
                 return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -146,6 +146,7 @@ class UserDeleteView(APIView):
     def delete(self, request, *args, **kwargs):
         user = request.user
         user.delete()
+        logging_library.log_access_message(request, ' User account deleted', "DELETION")
         return Response(status=204)
     
     
@@ -157,6 +158,7 @@ class UserPaymentListCreateView(generics.ListCreateAPIView):
         return UserPayment.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
+        logging_library.log_access_message(self.request, 'User address created ' + str(self.request.user), "ADDRESS")
         serializer.save(user=self.request.user)
 
 class UserPaymentRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
@@ -251,6 +253,7 @@ class LoginView(generics.GenericAPIView):
         refresh = RefreshToken.for_user(user)
         access_token = refresh.access_token
         access_token['is_superuser'] = user.is_superuser
+        logging_library.log_access_message(request, str(user.username) + 'logged in', "LOGIN")
         return Response({
             "id": user.id,
             "username": user.username,
@@ -519,6 +522,7 @@ class CartItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         if quantity is not None and int(quantity) == 0:
             instance.delete()
             return Response({'message': 'Cart item deleted due to zero quantity.'}, status=status.HTTP_200_OK)
+        logging_library.log_access_message(request, 'Cart updated', "CART UPDATE")
 
         serializer = self.get_serializer(instance, data=data, partial=partial)
         serializer.is_valid(raise_exception=True)
@@ -641,6 +645,7 @@ class ProductDeleteView(generics.DestroyAPIView):
             else:
                 product = self.get_object()
                 product.delete()
+                logging_library.log_access_message(request, str(product.name), "PRODUCT DELETION")
                 return Response({"message": "Product deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
         except (User.DoesNotExist, IndexError, KeyError):
             raise AuthenticationFailed('Invalid token or user not found')
@@ -685,6 +690,7 @@ class ProductUpdateView(generics.UpdateAPIView):
                         image_file = request.FILES['image']
                         saved_path = default_storage.save(image_file.name, image_file)
                         product.image = saved_path  # Save the path to your image field
+                    logging_library.log_access_message(request,"Product name: " + str(product.name) + "Request info: " + str(request.data), "PRODUCT UPDATE")
                     serializer.save()
                     return Response(serializer.data)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -729,6 +735,7 @@ class ProductCreateView(generics.CreateAPIView):
                 if serializer.is_valid():
                     try:
                         serializer.save()
+                        logging_library.log_access_message(request, str(serializer.data), 'PRODUCT')
                         return Response(serializer.data, status=status.HTTP_201_CREATED)
                     except IntegrityError as e:
                         return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -774,6 +781,7 @@ class OrganisationRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIVie
                         saved_path = default_storage.save(image_file.name, image_file)
                         organisation.image = saved_path  # Save the path to your image field
                     serializer.save()
+                    logging_library.log_access_message(request, "Organisation name: " + str(organisation.name) + " Request info: " +str(request.data) ,"ORGANISATION UPDATE")
                     return Response(serializer.data)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except (User.DoesNotExist, IndexError, KeyError):
@@ -901,7 +909,7 @@ class TwoFactorLoginView(generics.GenericAPIView):
         otp_secret = user.otp_secret
         totp = pyotp.TOTP(otp_secret)
         provisioning_uri = totp.provisioning_uri(user.username, issuer_name='CharityCentral')
-
+        logging_library.log_access_message(request, str(user.username) + ' logged in', "LOGIN")
         return Response({
             "otp_secret": otp_secret,
             "otp_provisioning_uri": provisioning_uri,
@@ -933,7 +941,7 @@ class TwoFactorSetupView(generics.GenericAPIView):
         # Update the verified_twofactor flag
         user.verified_twofactor = True
         user.save()
-
+        logging_library.log_access_message(request, ' 2FA SETUP', "2FA")
         return Response( status=status.HTTP_200_OK)
 
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
