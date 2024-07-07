@@ -254,13 +254,13 @@ class LoginView(generics.GenericAPIView):
             "is_superuser": user.is_superuser
         })
 
-    def sanitize_input(self, input):
-        input = re.sub(r'<script.*?>.*?</script>', '', input, flags=re.IGNORECASE)  # Remove script tags
-        input = re.sub(r'<[^>]+>', '', input)  # Remove all HTML tags
-        input = input.replace('"', '')  # Remove double quotes
-        input = input.replace("'", '')  # Remove single quotes
-        return input.strip()  # Remove whitespace from both ends
-
+    def escape_html(self, input):
+        input = re.sub(r'&', '&amp;', input)
+        input = re.sub(r'<', '&lt;', input)
+        input = re.sub(r'>', '&gt;', input)
+        input = re.sub(r'"', '&quot;', input)
+        input = re.sub(r"'", '&#039;', input)
+        return input
 
     def validate_length(self, input, field_name, max_length):
         if len(input) > max_length:
@@ -288,9 +288,9 @@ class LoginView(generics.GenericAPIView):
 
     def sanitize_and_validate_data(self, data):
         sanitized_data = {}
-        sanitized_data['username'] = self.sanitize_input(data.get('username', ''))
-        sanitized_data['password'] = self.sanitize_input(data.get('password', ''))
-        sanitized_data['otp'] = self.sanitize_input(data.get('otp', ''))
+        sanitized_data['username'] = self.escape_html(data.get('username', '').strip())
+        sanitized_data['password'] = self.escape_html(data.get('password', '').strip())
+        sanitized_data['otp'] = self.escape_html(data.get('otp', '').strip())
 
         sanitized_data['username'] = self.validate_username(sanitized_data['username'])
         sanitized_data['password'] = self.validate_password(sanitized_data['password'])
@@ -302,12 +302,13 @@ class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    def sanitize_input(self, input):
-        input = re.sub(r'<script.*?>.*?</script>', '', input, flags=re.IGNORECASE)  # Remove script tags
-        input = re.sub(r'<[^>]+>', '', input)  # Remove all HTML tags
-        input = input.replace('"', '')  # Remove double quotes
-        input = input.replace("'", '')  # Remove single quotes
-        return input.strip()  # Remove whitespace from both ends
+    def escape_html(self, input):
+        input = re.sub(r'&', '&amp;', input)
+        input = re.sub(r'<', '&lt;', input)
+        input = re.sub(r'>', '&gt;', input)
+        input = re.sub(r'"', '&quot;', input)
+        input = re.sub(r"'", '&#039;', input)
+        return input.strip()
 
     def validate_length(self, input, field_name):
         if len(input) > 255:
@@ -358,11 +359,11 @@ class RegisterView(generics.CreateAPIView):
 
     def sanitize_and_validate_data(self, data):
         sanitized_data = {}
-        sanitized_data['username'] = self.sanitize_input(data.get('username'))
-        sanitized_data['email'] = self.sanitize_input(data.get('email'))
-        sanitized_data['password'] = self.sanitize_input(data.get('password'))
-        sanitized_data['first_name'] = self.sanitize_input(data.get('first_name'))
-        sanitized_data['last_name'] = self.sanitize_input(data.get('last_name'))
+        sanitized_data['username'] = self.escape_html(data.get('username').strip())
+        sanitized_data['email'] = self.escape_html(data.get('email').strip())
+        sanitized_data['password'] = self.escape_html(data.get('password').strip())
+        sanitized_data['first_name'] = self.escape_html(data.get('first_name').strip())
+        sanitized_data['last_name'] = self.escape_html(data.get('last_name').strip())
 
         sanitized_data['username'] = self.validate_username(sanitized_data['username'])
         sanitized_data['email'] = self.validate_email(sanitized_data['email'])
