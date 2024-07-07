@@ -43,6 +43,8 @@ import jwt
 from django.conf import settings
 from django.contrib.auth import authenticate
 import os
+from django.utils import timezone
+import datetime
 
 @api_view(['GET'])
 def hello_world(request):
@@ -90,6 +92,12 @@ def OrganisationCreateView(request):
                 # Check and set created_at and modified_at
                 org_createdat = data.get('created_at') or timezone.now()
                 org_modifiedat = data.get('modified_at') or timezone.now()
+
+                # Convert to MySQL datetime format
+                if isinstance(org_createdat, datetime.datetime):
+                    org_createdat = org_createdat.strftime('%Y-%m-%d %H:%M:%S')
+                if isinstance(org_modifiedat, datetime.datetime):
+                    org_modifiedat = org_modifiedat.strftime('%Y-%m-%d %H:%M:%S')
 
                 # Use prepared statements with proper parameterization
                 with connection.cursor() as cursor:
