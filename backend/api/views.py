@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework import generics, status, permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from django.db import transaction, IntegrityError
+from django.db import transaction, IntegrityError, connection
 from django.db import transaction
 from .models import Product, Cart, CartItem, Organisation, User, ProductReview, \
     UserPayment, UserAddress, Order
@@ -26,6 +26,8 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from django_ratelimit.decorators import ratelimit
 import pyotp
 import logging
+from django.utils import timezone
+from django.core.files.base import ContentFile
 
 logger = logging.getLogger(__name__)
 
@@ -78,37 +80,35 @@ def OrganisationCreateView(request):
                 org_name = data.get('name')
                 org_desc = data.get('desc')
                 org_image = files.get('image')
-                org_createdat = data.get('created_at')
-                org_modifiedat = data.get('modified_at')
 
                 # Save the file if it's provided
                 if org_image:
-                    organisation = Organisation(
-                        name=org_name,
-                        desc=org_desc,
-                        image=org_image,
-                        created_at=org_createdat,
-                        modified_at=org_modifiedat
-                    )
+                    image_path = default_storage.save(org_image.name, ContentFile(org_image.read()))
                 else:
-                    organisation = Organisation(
-                        name=org_name,
-                        desc=org_desc,
-                        created_at=org_createdat,
-                        modified_at=org_modifiedat
-                    )
+                    image_path = None
 
-                try:
-                    organisation.save()
-                    return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
-                except IntegrityError as e:
-                    return JsonResponse({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+                # Check and set created_at and modified_at
+                org_createdat = data.get('created_at') or timezone.now()
+                org_modifiedat = data.get('modified_at') or timezone.now()
+
+                # Use prepared statements with proper parameterization
+                with connection.cursor() as cursor:
+                    sql = """
+                    INSERT INTO charity_central.api_organisation (name, `desc`, image, created_at, modified_at)
+                    VALUES (%s, %s, %s, %s, %s)
+                    """
+                    params = [org_name, org_desc, image_path, org_createdat, org_modifiedat]
+
+                    cursor.execute(sql, params)
+
+                return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
             else:
                 return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except (User.DoesNotExist, IndexError, KeyError) as e:
             return JsonResponse({'detail': 'Invalid token or user not found'}, status=status.HTTP_401_UNAUTHORIZED)
     else:
         return JsonResponse({'detail': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
 
 
 # Read User
@@ -254,12 +254,13 @@ class LoginView(generics.GenericAPIView):
             "is_superuser": user.is_superuser
         })
 
-    def sanitize_input(self, input):
-        input = re.sub(r'<script.*?>.*?</script>', '', input, flags=re.IGNORECASE)  # Remove script tags
-        input = re.sub(r'<[^>]+>', '', input)  # Remove all HTML tags
-        input = input.replace('"', '')  # Remove double quotes
-        input = input.replace("'", '')  # Remove single quotes
-        return input.strip()  # Remove whitespace from both ends
+    def escape_html(self, input):
+        input = re.sub(r'&', '&amp;', input)
+        input = re.sub(r'<', '&lt;', input)
+        input = re.sub(r'>', '&gt;', input)
+        input = re.sub(r'"', '&quot;', input)
+        input = re.sub(r"'", '&#039;', input)
+        return input
 
 
     def validate_length(self, input, field_name, max_length):
@@ -288,9 +289,9 @@ class LoginView(generics.GenericAPIView):
 
     def sanitize_and_validate_data(self, data):
         sanitized_data = {}
-        sanitized_data['username'] = self.sanitize_input(data.get('username', ''))
-        sanitized_data['password'] = self.sanitize_input(data.get('password', ''))
-        sanitized_data['otp'] = self.sanitize_input(data.get('otp', ''))
+        sanitized_data['username'] = self.escape_html(data.get('username', '').strip())
+        sanitized_data['password'] = self.escape_html(data.get('password', '').strip())
+        sanitized_data['otp'] = self.escape_html(data.get('otp', '').strip())
 
         sanitized_data['username'] = self.validate_username(sanitized_data['username'])
         sanitized_data['password'] = self.validate_password(sanitized_data['password'])
@@ -302,12 +303,13 @@ class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    def sanitize_input(self, input):
-        input = re.sub(r'<script.*?>.*?</script>', '', input, flags=re.IGNORECASE)  # Remove script tags
-        input = re.sub(r'<[^>]+>', '', input)  # Remove all HTML tags
-        input = input.replace('"', '')  # Remove double quotes
-        input = input.replace("'", '')  # Remove single quotes
-        return input.strip()  # Remove whitespace from both ends
+    def escape_html(self, input):
+        input = re.sub(r'&', '&amp;', input)
+        input = re.sub(r'<', '&lt;', input)
+        input = re.sub(r'>', '&gt;', input)
+        input = re.sub(r'"', '&quot;', input)
+        input = re.sub(r"'", '&#039;', input)
+        return input.strip()
 
     def validate_length(self, input, field_name):
         if len(input) > 255:
@@ -358,11 +360,11 @@ class RegisterView(generics.CreateAPIView):
 
     def sanitize_and_validate_data(self, data):
         sanitized_data = {}
-        sanitized_data['username'] = self.sanitize_input(data.get('username'))
-        sanitized_data['email'] = self.sanitize_input(data.get('email'))
-        sanitized_data['password'] = self.sanitize_input(data.get('password'))
-        sanitized_data['first_name'] = self.sanitize_input(data.get('first_name'))
-        sanitized_data['last_name'] = self.sanitize_input(data.get('last_name'))
+        sanitized_data['username'] = self.escape_html(data.get('username').strip())
+        sanitized_data['email'] = self.escape_html(data.get('email').strip())
+        sanitized_data['password'] = self.escape_html(data.get('password').strip())
+        sanitized_data['first_name'] = self.escape_html(data.get('first_name').strip())
+        sanitized_data['last_name'] = self.escape_html(data.get('last_name').strip())
 
         sanitized_data['username'] = self.validate_username(sanitized_data['username'])
         sanitized_data['email'] = self.validate_email(sanitized_data['email'])

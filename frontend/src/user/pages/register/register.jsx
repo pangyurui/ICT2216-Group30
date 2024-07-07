@@ -11,7 +11,7 @@ export const Register = () => {
         password: '',
         first_name: '',
         last_name: ''
-    });
+    }); 
 
     const [commonPasswords, setCommonPasswords] = useState([]);
     const [csrfToken, setCsrfToken] = useState('');
@@ -47,13 +47,13 @@ export const Register = () => {
 
     const disallowedChars = /[<>"'&]/;
 
-    const sanitizeInput = (input) => {
-        return input
-            .replace(/<script.*?>.*?<\/script>/gi, '')  // Remove script tags
-            .replace(/<.*?>/g, '')                      // Remove all HTML tags
-            .replace(/"/g, '')                          // Remove double quotes
-            .replace(/'/g, '')                          // Remove single quotes
-            .trim();                                    // Remove whitespace from both ends
+    const escapeHtml = (unsafe) => {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     };
 
     const onChange = e => {
@@ -135,17 +135,17 @@ export const Register = () => {
             return;
         }
 
-        // Sanitize data before sending to the backend
-        const sanitizedData = {
-            username: sanitizeInput(username),
-            email: sanitizeInput(email),
-            password: sanitizeInput(password),
-            first_name: sanitizeInput(first_name),
-            last_name: sanitizeInput(last_name)
+        // Escape data before sending to the backend
+        const escapedData = {
+            username: escapeHtml(username.trim()),
+            email: escapeHtml(email.trim()),
+            password: escapeHtml(password.trim()),
+            first_name: escapeHtml(first_name.trim()),
+            last_name: escapeHtml(last_name.trim())
         };
 
         try {
-            const res = await axios.post('https://ict2216group30.store/api/register/', sanitizedData, {
+            const res = await axios.post('https://ict2216group30.store/api/register/', escapedData, {
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrfToken // Include CSRF token in headers

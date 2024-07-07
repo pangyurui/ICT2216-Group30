@@ -33,13 +33,13 @@ export const Login = ({ setAuth, setHasLoggedOut }) => {
 
     const disallowedChars = /[<>"'&]/;
 
-    const sanitizeInput = (input) => {
-        return input
-            .replace(/<script.*?>.*?<\/script>/gi, '')  // Remove script tags
-            .replace(/<[^>]+>/g, '')                    // Remove all HTML tags
-            .replace(/"/g, '')                          // Remove double quotes
-            .replace(/'/g, '')                          // Remove single quotes
-            .trim();                                    // Remove whitespace from both ends
+    const escapeHtml = (unsafe) => {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     };
 
     const validateLength = (input, fieldName, maxLength) => {
@@ -102,15 +102,15 @@ export const Login = ({ setAuth, setHasLoggedOut }) => {
             return;
         }
 
-        // Sanitize data before sending to the backend
-        const sanitizedData = {
-            username: sanitizeInput(username),
-            password: sanitizeInput(password),
-            otp: sanitizeInput(otp)
+         // Escape data before sending to the backend
+         const escapedData = {
+            username: escapeHtml(username.trim()),
+            password: escapeHtml(password.trim()),
+            otp: escapeHtml(otp.trim())
         };
 
         try {
-            const res = await axios.post('https://ict2216group30.store/api/login/', sanitizedData, {
+            const res = await axios.post('https://ict2216group30.store/api/login/', escapedData, {
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrfToken // Include CSRF token in headers
@@ -137,7 +137,7 @@ export const Login = ({ setAuth, setHasLoggedOut }) => {
             Swal.fire({
                 icon: 'success',
                 title: 'Login Successful',
-                text: 'Welcome back ' + username + '.',
+                text: 'Welcome back ' + escapeHtml(username.trim()) + '.', // Escape username
             });
         } catch (err) {
             if (err.response && err.response.status === 403) {
