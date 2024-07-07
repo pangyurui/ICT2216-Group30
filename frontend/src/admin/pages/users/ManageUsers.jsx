@@ -30,7 +30,6 @@ const ManageUsers = () => {
             setUsers(data);
             setLoading(false);
         } catch (error) {
-            console.error('Failed to fetch users:', error);
             setError('Failed to fetch users');
             setLoading(false);
         }
@@ -50,26 +49,14 @@ const ManageUsers = () => {
               setUsers(users.filter(user => user.id !== userId));
             })
             .catch(error => {
-              console.error("There was an error deleting the user!", error);
               alert('Failed to delete the user');
             });
         }
       };
 
-    // const handleDelete = async (userId) => {
-    //     try {
-    //         await axios.delete(`https://ict2216group30.store/api/users/${userId}/`);
-    //         // After deletion, fetch the list again to reflect changes or remove the user from the state
-    //         setUsers(users.filter(user => user.id !== userId));
-    //     } catch (error) {
-    //         console.error('Failed to delete the user:', error);
-    //         setError('Failed to delete the user');
-    //     }
-    // };
-
 
     if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error: {error}</p>;
+    if (error) return <p>Error</p>;
 
     return (
         <div className="manage-users-content">

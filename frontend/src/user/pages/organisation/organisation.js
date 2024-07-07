@@ -28,7 +28,7 @@ export const Organisation = () => {
 
 
     if (error) {
-        return <div>Error fetching organisations: {error.message}</div>;
+        return <div>Error fetching organisations</div>;
     }
 
 

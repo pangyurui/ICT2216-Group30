@@ -18,12 +18,11 @@ export const AdminOrganisation = () => {
         if (Array.isArray(response.data)) {
           setData(response.data);
         } else {
-          console.error("Expected an array but got:", response.data);
           setData([]);
         }
       })
       .catch(error => {
-        console.error("There was an error fetching the data!", error);
+        
         setData([]);
       });
   };
@@ -42,7 +41,6 @@ export const AdminOrganisation = () => {
           fetchData(); // Re-fetch data to update the list after deletion
         })
         .catch(error => {
-          console.error("There was an error deleting the organisation!", error);
           alert('Failed to delete the organisation');
         });
     }

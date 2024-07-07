@@ -23,7 +23,7 @@ export const Payments = () => {
             const res = await axiosAuth.get('payments/');
             setPayments(res.data);
         } catch (err) {
-            console.error(err);
+            
         }
     };
 
@@ -75,7 +75,7 @@ export const Payments = () => {
                 confirmButtonText: 'OK'
             });
         } catch (err) {
-            console.error(err);
+            
         }
     };
 
@@ -99,7 +99,6 @@ export const Payments = () => {
                     'success'
                 );
             } catch (err) {
-                console.error(err);
                 Swal.fire(
                     'Error!',
                     'There was an error deleting your payment method.',
@@ -143,7 +142,6 @@ export const Payments = () => {
                 confirmButtonText: 'OK'
             });
         } catch (err) {
-            console.error(err);
         }
     };
 

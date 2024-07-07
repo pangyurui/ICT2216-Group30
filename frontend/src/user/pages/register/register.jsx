@@ -24,7 +24,7 @@ export const Register = () => {
                 const response = await axios.get('https://ict2216group30.store/api/common-passwords/');
                 setCommonPasswords(response.data);
             } catch (error) {
-                console.error('Error fetching common passwords:', error);
+                
             }
         };
 
@@ -37,7 +37,7 @@ export const Register = () => {
                 const token = Cookies.get('csrftoken'); // Retrieve CSRF token from cookies
                 setCsrfToken(token);
             } catch (error) {
-                console.error('Failed to fetch CSRF token:', error);
+            
             }
         };
 
@@ -152,7 +152,7 @@ export const Register = () => {
                 },
                 withCredentials: true // Include credentials (cookies)
             });
-            console.log(res.data);
+            
             Swal.fire({
                 icon: 'success',
                 title: 'Registration Successful',
@@ -164,7 +164,6 @@ export const Register = () => {
                 }
             });
         } catch (err) {
-            console.error(err.response.data);
             Swal.fire({
                 icon: 'error',
                 title: 'Registration Failed',

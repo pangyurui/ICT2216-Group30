@@ -24,7 +24,7 @@ export const Login = ({ setAuth, setHasLoggedOut }) => {
                 const token = Cookies.get('csrftoken'); // Retrieve CSRF token from cookies
                 setCsrfToken(token);
             } catch (error) {
-                console.error('Failed to fetch CSRF token:', error);
+                
             }
         };
 
@@ -148,7 +148,7 @@ export const Login = ({ setAuth, setHasLoggedOut }) => {
                 });
                 navigate("/");
             } else {
-                console.error(err.response.data);
+                
                 Swal.fire({
                     icon: 'error',
                     title: 'Login Failed',

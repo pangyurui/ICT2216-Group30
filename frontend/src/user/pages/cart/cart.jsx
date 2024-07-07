@@ -16,13 +16,12 @@ export const Cart = () => {
         const token = localStorage.getItem('access_token');
         
         if (!token) {
-          console.error('No access token found in localStorage');
           Swal.fire({
             icon: 'error',
             title: 'No Access Token',
             text: 'Please log in to view your cart.',
           });
-          throw new Error('No token found');
+          
         }
         await fetchCartItems();
         setLoading(false);

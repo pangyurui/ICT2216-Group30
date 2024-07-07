@@ -28,7 +28,7 @@ export const Checkout = () => {
             const res = await axiosAuth.get('payments/');
             setPaymentMethods(res.data);
         } catch (err) {
-            console.error(err);
+            
         }
     };
 
@@ -37,7 +37,7 @@ export const Checkout = () => {
             const res = await axiosAuth.get('addresses/');
             setAddresses(res.data);
         } catch (err) {
-            console.error(err);
+            
         }
     };
 
@@ -69,7 +69,7 @@ export const Checkout = () => {
                 navigate('/');
             });
         } catch (err) {
-            console.error(err);
+            
             Swal.fire({
                 title: 'Error',
                 text: 'Failed to complete the order.',

@@ -37,13 +37,13 @@ const EditProduct = () => {
                 });
                 // setImagePreview(response.data.image || '');  // Assuming 'image' is the URL of the image
             })
-            .catch(error => console.error('Error fetching product details:', error));
+            .catch(error =>{});
 
         // Fetch organisations
 
         axios.get(`https://ict2216group30.store/api/organisations/`)
             .then(res => setOrganisations(res.data))
-            .catch(err => console.error('Error fetching organisations:', err));
+            .catch(err => {});
     }, [id]);
 
 
@@ -89,7 +89,7 @@ const EditProduct = () => {
         }
         const token = localStorage.getItem('access_token');
             if (!token) {
-                throw new Error('No access token found');
+                return;
             }
         axios.put(`https://ict2216group30.store/api/products/update/${id}/`, formData, {
             headers: { 'Content-Type': 'multipart/form-data',
@@ -107,7 +107,6 @@ const EditProduct = () => {
             navigate('/admin');
         })
         .catch(error => {
-            console.error('Error updating product:', error);
             Swal.fire({
                 title: 'Error!',
                 text: `Failed to update product: ${error.response ? error.response.data.detail : 'No detail'}`,

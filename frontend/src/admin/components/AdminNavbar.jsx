@@ -17,7 +17,7 @@ const AdminNavbar = ({ logout }) => {
         'success'
       );
     } catch (error) {
-      console.error('Logout failed:', error);
+      
     }
   };
 

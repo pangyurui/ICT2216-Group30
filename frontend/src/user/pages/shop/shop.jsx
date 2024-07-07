@@ -30,7 +30,7 @@ export const Shop = () => {
   }
 
   if (error) {
-    return <div>Error fetching products: {error.message}</div>;
+    return <div>Error fetching products</div>;
   }
 
   return (

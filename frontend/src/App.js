@@ -103,7 +103,6 @@ function App() {
           setAuth(user);
           setHasLoggedOut(false); // Reset the hasLoggedOut state when a user logs in
         } catch (error) {
-          console.error("Invalid token:", error);
           clearAuth(); // Clear authentication state on error
         }
       }
@@ -118,7 +117,7 @@ function App() {
       try {
         await axios.post('/api/logout/', { refresh_token: refreshToken });
       } catch (error) {
-        console.error("Error logging out:", error);
+        
       }
     }
     clearAuth();

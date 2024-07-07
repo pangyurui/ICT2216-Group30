@@ -26,7 +26,6 @@ const AdminDashboard = () => {
                 setLoading(false);
             })
             .catch(error => {
-                console.error('Error fetching products:', error);
                 setError(error);
                 setLoading(false);
             });
@@ -52,7 +51,6 @@ const AdminDashboard = () => {
                     setProducts(currentProducts => currentProducts.filter(p => p.id !== productId));
                 })
                 .catch(error => {
-                    console.error('Error deleting the product:', error);
                     alert('Failed to delete the product');
                 });
         }

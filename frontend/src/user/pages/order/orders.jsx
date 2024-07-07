@@ -15,7 +15,7 @@ export const Orders = () => {
             const res = await axiosAuth.get('orders/');
             setOrders(res.data);
         } catch (err) {
-            console.error(err);
+            
         }
     };
 

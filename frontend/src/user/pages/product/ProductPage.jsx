@@ -30,7 +30,6 @@ export const ProductPage = () => {
         const response = await axios.get('https://ict2216group30.store/api/get_csrf_token/');
         setCsrfToken(response.data.csrfToken);
       } catch (error) {
-        console.error('Failed to fetch CSRF token:', error);
       }
     };
 
@@ -64,7 +63,6 @@ export const ProductPage = () => {
           setReviews(response.data);
         })
         .catch(error => {
-          console.error('Error fetching reviews:', error);
         });
     };
 
@@ -118,7 +116,7 @@ export const ProductPage = () => {
     .catch(error => {
         // Handle errors
         setIsSubmitting(false); // Re-enable the button
-        alert('Failed to submit review: ' + error.message);
+        alert('Failed to submit review: ');
     });
   };
 
@@ -127,7 +125,7 @@ export const ProductPage = () => {
   }
 
   if (error) {
-    return <div>Error fetching product: {error.message}</div>;
+    return <div>Error fetching product</div>;
   }
 
   if (!product) {

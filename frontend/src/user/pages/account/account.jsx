@@ -25,7 +25,7 @@ export const Account = ({ setAuth }) => {
                     password: ''
                 });
             })
-            .catch(err => console.error(err));
+            .catch(err => {});
     }, []);
 
     const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -58,7 +58,7 @@ export const Account = ({ setAuth }) => {
                 confirmButtonText: 'OK'
             });
         } catch (err) {
-            console.error(err.response.data);
+            
         }
     };
 
@@ -98,7 +98,7 @@ export const Account = ({ setAuth }) => {
                         window.location.href = '/';
                     });
                 } catch (err) {
-                    console.error(err.response.data);
+                    
                 }
             }
         });

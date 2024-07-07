@@ -22,7 +22,7 @@ export const Addresses = () => {
             const res = await axiosAuth.get('addresses/');
             setAddresses(res.data);
         } catch (err) {
-            console.error(err);
+            
         }
     };
 
@@ -41,7 +41,7 @@ export const Addresses = () => {
                 country: ''
             });
         } catch (err) {
-            console.error(err);
+            
         }
     };
 
@@ -50,7 +50,7 @@ export const Addresses = () => {
             await axiosAuth.delete(`addresses/${id}/`);
             setAddresses(addresses.filter(address => address.id !== id));
         } catch (err) {
-            console.error(err);
+            
         }
     };
 
@@ -71,7 +71,7 @@ export const Addresses = () => {
                 country: ''
             });
         } catch (err) {
-            console.error(err);
+            
         }
     };
 

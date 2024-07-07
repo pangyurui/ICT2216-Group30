@@ -24,7 +24,7 @@ export const ManageOrganisation = () => {
           });
         })
         .catch(error => {
-          console.error("There was an error fetching the organisation data!", error);
+          
         });
     }
   }, [id]);
@@ -80,7 +80,7 @@ export const ManageOrganisation = () => {
           icon: 'error',
           confirmButtonText: 'OK'
         });
-        console.error(`There was an error ${id ? 'updating' : 'creating'} the organisation!`, error);
+        
       });
   };
 

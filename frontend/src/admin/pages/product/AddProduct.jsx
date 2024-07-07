@@ -24,7 +24,7 @@ const AddProduct = () => {
         // Fetch organisations
         axios.get('https://ict2216group30.store/api/organisations/')
             .then(response => setOrganisations(response.data))
-            .catch(error => console.error('Error fetching organisations:', error));
+            .catch(error => {});
     }, []);
 
     const handleChange = (e) => {
@@ -61,18 +61,6 @@ const AddProduct = () => {
         
         });
 
-         // Log FormData contents for debugging
-        for (let [key, value] of formData.entries()) {
-            console.log(`${key}: ${value}`);
-        }
-
-        // //Handle post request
-        // axios.post('https://ict2216group30.store/api/products/', formData)
-        //     .then(response => {
-        //         console.log('Product added:', response.data);
-        //         navigate('/admin'); // Redirect on successful add
-        //     })
-        //     .catch(error => console.error('Error adding product:', error));
 
          // Handle the post request
          axios.post('https://ict2216group30.store/api/products/add/', formData, {
@@ -92,7 +80,6 @@ const AddProduct = () => {
             navigate('/admin'); // Redirect on successful add
         })
         .catch(error => {
-            console.error('Error adding product:', error);
             Swal.fire({
                 position: "top-end",
                 title: 'Failed to add product',

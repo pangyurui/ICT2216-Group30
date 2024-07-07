@@ -29,7 +29,7 @@ export const TwoFALogin = ({ setAuth }) => {
                 const token = Cookies.get('csrftoken'); // Retrieve CSRF token from cookies
                 setCsrfToken(token);
             } catch (error) {
-                console.error('Failed to fetch CSRF token:', error);
+                
             }
         };
 
@@ -50,10 +50,9 @@ export const TwoFALogin = ({ setAuth }) => {
             });
             setOtpSecret(res.data.otp_secret);
             setOtpProvisioningUri(res.data.otp_provisioning_uri);
-            console.log(res.data);
             setIsOtpSetup(true);
         } catch (err) {
-            console.error(err.response.data);
+            
             Swal.fire({
                 icon: 'error',
                 title: 'Login Failed',
@@ -82,7 +81,6 @@ export const TwoFALogin = ({ setAuth }) => {
                 }
             });
         } catch (err) {
-            console.error(err.response.data);
             Swal.fire({
                 icon: 'error',
                 title: '2FA Setup Failed',

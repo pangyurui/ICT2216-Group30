@@ -30,7 +30,6 @@ export const ShopContextProvider = (props) => {
       const response = await axios.get('https://ict2216group30.store/api/products/');
       setProducts(response.data);
     } catch (error) {
-      console.error('Error fetching products', error);
       Swal.fire({
         icon: 'error',
         title: 'Error',
@@ -43,7 +42,7 @@ export const ShopContextProvider = (props) => {
     try {
       const token = localStorage.getItem('access_token');
       if (!token) {
-        throw new Error('No access token found');
+        return;
       }
 
       const cartResponse = await axios.get('https://ict2216group30.store/api/cart/', {
@@ -70,7 +69,7 @@ export const ShopContextProvider = (props) => {
       setCartItems(initialCart);
 
     } catch (error) {
-      console.error('Error fetching cart items', error);
+      
       Swal.fire({
         icon: 'error',
         title: 'Error',
@@ -89,7 +88,7 @@ export const ShopContextProvider = (props) => {
                 const token = Cookies.get('csrftoken'); // Retrieve CSRF token from cookies
                 setCsrfToken(token);
             } catch (error) {
-                console.error('Failed to fetch CSRF token:', error);
+                
             }
         };
 
@@ -101,7 +100,7 @@ export const ShopContextProvider = (props) => {
   const addToCart = async (itemId) => {
     const itemInfo = products.find((product) => product.id === itemId);
     if (!itemInfo) {
-      console.error('Product not found:', itemId);
+      
       return;
     }
 
@@ -131,7 +130,6 @@ export const ShopContextProvider = (props) => {
         showConfirmButton: false,
       });
     } catch (error) {
-      console.error('Error adding item to cart', error);
       Swal.fire({
         position: "top-end",
         title: 'Failed to add ' + itemInfo.name + " to cart",
@@ -189,7 +187,6 @@ export const ShopContextProvider = (props) => {
         });
       }
     } catch (error) {
-      console.error('Error removing item from cart', error);
       Swal.fire({
         position: "top-end",
         title: 'Failed to remove item from cart',
@@ -246,7 +243,6 @@ export const ShopContextProvider = (props) => {
         });
       }
     } catch (error) {
-      console.error('Error adding item to cart', error);
       Swal.fire({
         position: "top-end",
         title: 'Failed to add item to cart',
@@ -296,7 +292,6 @@ export const ShopContextProvider = (props) => {
           showConfirmButton: false
         });
       } catch (error) {
-        console.error('Error removing items from cart', error);
         Swal.fire({
           position: "top-end",
           title: `Failed to remove ${productName} from cart`,
@@ -320,7 +315,6 @@ export const ShopContextProvider = (props) => {
     const cartItemId = cartItems[itemId]?.cartItemId;
 
     if (!itemInfo || !cartItemId) {
-      console.error('Product not found or not in cart:', itemId);
       return;
     }
 
@@ -349,7 +343,6 @@ export const ShopContextProvider = (props) => {
         showConfirmButton: false,
       });
     } catch (error) {
-      console.error('Error updating item quantity in cart', error);
       Swal.fire({
         position: "top-end",
         title: 'Failed to update item quantity in cart',

@@ -12,7 +12,6 @@ export const getAccessToken = async () => {
             localStorage.setItem('isLoggedIn', 'true'); // Set isLoggedIn to true
             return newAccessToken;
         } catch (err) {
-            console.error('Failed to refresh token:', err);
             clearAuth(); // Clear authentication state on failure
             return null;
         }
@@ -32,7 +31,6 @@ const refreshToken = async () => {
     const refresh_token = localStorage.getItem('refresh_token');
     if (!refresh_token) {
         clearAuth();
-        throw new Error('No refresh token available');
     }
 
     try {
@@ -41,9 +39,7 @@ const refreshToken = async () => {
         localStorage.setItem('access_token', access_token);
         return access_token;
     } catch (error) {
-        console.error('Failed to refresh token:', error);
         clearAuth();
-        throw error;
     }
 };
 
