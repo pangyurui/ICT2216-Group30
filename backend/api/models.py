@@ -62,7 +62,6 @@ class CustomUserManager(BaseUserManager):
 
 class User(AbstractBaseUser):
 
-    current_session_token = models.CharField(max_length=255, null=True, blank=True)
     username = models.CharField(max_length=255, unique=True)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=255)
