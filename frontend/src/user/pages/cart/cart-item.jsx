@@ -5,7 +5,7 @@ import { X } from "phosphor-react";
 export const CartItem = (props) => {
   const { id, quantity, productDetails } = props.data;
   const { name, price, image } = productDetails;
-  const { removeFromCart, updateCartItemCount, removeAllCartItemsByName, addToCartQuantity } =
+  const { removeFromCart, removeAllCartItemsByName, addToCartQuantity } =
     useContext(ShopContext);
 
   return (
@@ -22,11 +22,7 @@ export const CartItem = (props) => {
         <p> Quantity: {quantity}</p>
         <div className="countHandler">
           <button onClick={() => removeFromCart(id)}> - </button>
-          <input
-            type="number"
-            value={quantity}
-            onChange={(e) => updateCartItemCount(Number(e.target.value), id)}
-          />
+          <span>{quantity}</span>
           <button onClick={() => addToCartQuantity(id)}> + </button>
         </div>
       </div>

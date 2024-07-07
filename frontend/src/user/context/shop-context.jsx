@@ -310,48 +310,7 @@ export const ShopContextProvider = (props) => {
     }, 0);
   };
 
-  const updateCartItemCount = async (newAmount, itemId) => {
-    const itemInfo = products.find((product) => product.id === itemId);
-    const cartItemId = cartItems[itemId]?.cartItemId;
-
-    if (!itemInfo || !cartItemId) {
-      return;
-    }
-
-    try {
-      const token = localStorage.getItem('access_token');
-      await axios.put(`https://ict2216group30.store/api/cart/cart-items/${cartItemId}/`, {
-        quantity: newAmount,
-        product: itemId
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-           'X-CSRFToken': csrfToken
-        }
-      });
-
-      setCartItems((prev) => ({
-        ...prev,
-        [itemId]: { quantity: newAmount, cartItemId: cartItemId }
-      }));
-
-      Swal.fire({
-        position: "top-end",
-        title: `Updated quantity of ${itemInfo.name} to ${newAmount}`,
-        timer: 1500,
-        icon: 'success',
-        showConfirmButton: false,
-      });
-    } catch (error) {
-      Swal.fire({
-        position: "top-end",
-        title: 'Failed to update item quantity in cart',
-        timer: 1500,
-        icon: 'error',
-        showConfirmButton: false,
-      });
-    }
-  };
+  
 
   const checkout = () => {
     setCartItems(getDefaultCart(products));
@@ -362,7 +321,6 @@ export const ShopContextProvider = (props) => {
     products,
     addToCart,
     addToCartQuantity,
-    updateCartItemCount,
     removeFromCart,
     getTotalCartAmount,
     checkout,
