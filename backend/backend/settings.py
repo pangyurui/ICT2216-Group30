@@ -158,7 +158,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://ict2216group30.store",  # Adjust based on your frontend URL
     "https://www.ict2216group30.store",  # Adjust based on your frontend URL
 ]
-
+CSRF_COOKIE_AGE = 3600
 CORS_ALLOW_HEADERS = [
     'content-type',
     'x-csrftoken',
