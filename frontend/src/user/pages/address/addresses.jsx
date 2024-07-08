@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { axiosAuth } from '../../../utils/axiosAuth';
+import Swal from 'sweetalert2';
 import './addresses.css';
 
 export const Addresses = () => {
@@ -40,17 +41,44 @@ export const Addresses = () => {
                 postal_code: '',
                 country: ''
             });
+
+            Swal.fire({
+                title: 'Success!',
+                text: 'Address added successfully.',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
         } catch (err) {
             
         }
     };
 
     const onDelete = async id => {
-        try {
-            await axiosAuth.delete(`addresses/${id}/`);
-            setAddresses(addresses.filter(address => address.id !== id));
-        } catch (err) {
-            
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await axiosAuth.delete(`addresses/${id}/`);
+                setAddresses(addresses.filter(address => address.id !== id));
+                Swal.fire(
+                    'Deleted!',
+                    'Your address has been deleted.',
+                    'success'
+                );
+            } catch (err) {
+                Swal.fire(
+                    'Error!',
+                    'There was an error deleting your address.',
+                    'error'
+                );
+            }
         }
     };
 
@@ -69,6 +97,19 @@ export const Addresses = () => {
                 city: '',
                 postal_code: '',
                 country: ''
+            });
+
+            Swal.fire({
+                title: 'Updated Successfully!',
+                html: `
+                    <p><strong>Address Line 1:</strong> ${res.data.address_line1}</p>
+                    <p><strong>Address Line 2:</strong> ${res.data.address_line2}</p>
+                    <p><strong>City:</strong> ${res.data.city}</p>
+                    <p><strong>Postal Code:</strong> ${res.data.postal_code}</p>
+                    <p><strong>Country:</strong> ${res.data.country}</p>
+                `,
+                icon: 'success',
+                confirmButtonText: 'OK'
             });
         } catch (err) {
             
@@ -143,9 +184,9 @@ export const Addresses = () => {
                     />
                 </div>
                 <button type="submit">{formData.id ? 'Update Address' : 'Add Address'}</button>
-                {formData.id && <button onClick={clearForm}>Add New Address</button>}
+                {formData.id && <button type="button" onClick={clearForm}>Add New Address</button>}
             </form>
-            <h2> Saved Addresses</h2>
+            <h2>Saved Addresses</h2>
             <ul className="addresses-list">
                 {addresses.map(address => (
                     <li key={address.id} onClick={() => toggleExpand(address.id)} className={expandedAddressId === address.id ? 'expanded' : ''}>
@@ -159,7 +200,7 @@ export const Addresses = () => {
                             <div className="country">{address.country}</div>
                             <div className="address-actions">
                                 <button className="edit-button" onClick={() => onEdit(address)}>Edit</button>
-                                <button className="delete-button" onClick={() => onDelete(address.id)}>Delete</button>
+                                <button className="delete-button" onClick={(e) => {e.stopPropagation(); onDelete(address.id)}}>Delete</button>
                             </div>
                         </div>
                     )}
