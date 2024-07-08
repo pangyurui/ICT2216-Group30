@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import Swal from 'sweetalert2';
-import Cookies from 'js-cookie'; // Import Cookies library
+import Cookies from 'js-cookie';
 
 
 export const ShopContext = createContext(null);
@@ -79,13 +79,12 @@ export const ShopContextProvider = (props) => {
   }, []);
 
   useEffect(() => {
-// Fetch CSRF token
      const fetchCSRFToken = async () => {
      try {
                 const response = await axios.get('https://ict2216group30.store/api/get_csrf_token/', {
-                    withCredentials: true // Important: include credentials (cookies)
+                    withCredentials: true
                 });
-                const token = Cookies.get('csrftoken'); // Retrieve CSRF token from cookies
+                const token = Cookies.get('csrftoken');
                 setCsrfToken(token);
             } catch (error) {
                 
@@ -203,7 +202,6 @@ export const ShopContextProvider = (props) => {
     const cartItemId = cartItems[itemId]?.cartItemId;
 
     if (!cartItemId) {
-      // If the item does not exist in the cart, you might want to add it instead of updating.
       await addToCart(itemId);
       return;
     }

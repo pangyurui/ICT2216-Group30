@@ -33,10 +33,8 @@ export const Account = ({ setAuth }) => {
     const onSubmit = async e => {
         e.preventDefault();
 
-        // Create a copy of formData
         const updatedData = { ...formData };
         
-        // Remove password if it is blank
         if (!updatedData.password) {
             delete updatedData.password;
         }
@@ -45,7 +43,6 @@ export const Account = ({ setAuth }) => {
             const res = await axiosAuth.put('account/update/', updatedData);
             setUser(res.data);
 
-            // Display success message with updated fields
             Swal.fire({
                 title: 'Update Successful',
                 html: `
@@ -65,7 +62,6 @@ export const Account = ({ setAuth }) => {
     const onDelete = async () => {
     const csrfToken = localStorage.getItem('csrftoken');
 
-        // Display confirmation dialog
         Swal.fire({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -86,9 +82,7 @@ export const Account = ({ setAuth }) => {
                     localStorage.removeItem('access_token');
                     localStorage.removeItem('refresh_token');
                     localStorage.removeItem('isLoggedIn');
-                    // axios.defaults.headers.common['Authorization'] = '';
 
-                    // Show success message after deletion
                     Swal.fire({
                         title: 'Deleted!',
                         text: 'Your account has been deleted.',

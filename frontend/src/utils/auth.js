@@ -4,15 +4,15 @@ import axios from "axios";
 export const getAccessToken = async () => {
     const access_token = localStorage.getItem('access_token');
     if (access_token && !isTokenExpired(access_token)) {
-        localStorage.setItem('isLoggedIn', 'true'); // Set isLoggedIn to true
+        localStorage.setItem('isLoggedIn', 'true');
         return access_token;
     } else {
         try {
             const newAccessToken = await refreshToken();
-            localStorage.setItem('isLoggedIn', 'true'); // Set isLoggedIn to true
+            localStorage.setItem('isLoggedIn', 'true');
             return newAccessToken;
         } catch (err) {
-            clearAuth(); // Clear authentication state on failure
+            clearAuth();
             return null;
         }
     }
@@ -27,7 +27,6 @@ const isTokenExpired = (token) => {
 };
 
 const refreshToken = async () => {
-    // Implement your token refresh logic here
     const refresh_token = localStorage.getItem('refresh_token');
     if (!refresh_token) {
         clearAuth();

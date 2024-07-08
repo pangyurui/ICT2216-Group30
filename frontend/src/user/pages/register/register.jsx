@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import './register.css';
-import Cookies from 'js-cookie'; // Import Cookies library
+import Cookies from 'js-cookie';
 
 export const Register = () => {
     const [formData, setFormData] = useState({
@@ -28,13 +28,12 @@ export const Register = () => {
             }
         };
 
-        // Fetch the CSRF token from the backend
         const fetchCSRFToken = async () => {
             try {
                 const response = await axios.get('https://ict2216group30.store/api/get_csrf_token/', {
-                    withCredentials: true // Include credentials (cookies)
+                    withCredentials: true
                 });
-                const token = Cookies.get('csrftoken'); // Retrieve CSRF token from cookies
+                const token = Cookies.get('csrftoken');
                 setCsrfToken(token);
             } catch (error) {
             
@@ -135,7 +134,6 @@ export const Register = () => {
             return;
         }
 
-        // Escape data before sending to the backend
         const escapedData = {
             username: escapeHtml(username.trim()),
             email: escapeHtml(email.trim()),
@@ -148,9 +146,9 @@ export const Register = () => {
             const res = await axios.post('https://ict2216group30.store/api/register/', escapedData, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken // Include CSRF token in headers
+                    'X-CSRFToken': csrfToken
                 },
-                withCredentials: true // Include credentials (cookies)
+                withCredentials: true
             });
             
             Swal.fire({

@@ -3,25 +3,25 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import './login.css';
-import Cookies from 'js-cookie'; // Import Cookies library
+import Cookies from 'js-cookie';
 
 export const Login = ({ setAuth, setHasLoggedOut }) => {
     const [formData, setFormData] = useState({
         username: '',
         password: '',
-        otp: '' // Add OTP password to state
+        otp: ''
     });
     const navigate = useNavigate();
-    const { username, password, otp } = formData; // Destructure otp
+    const { username, password, otp } = formData;
     const [csrfToken, setCsrfToken] = useState('');
 
     useEffect(() => {
         const fetchCSRFToken = async () => {
             try {
                 const response = await axios.get('https://ict2216group30.store/api/get_csrf_token/', {
-                    withCredentials: true // Important: include credentials (cookies)
+                    withCredentials: true
                 });
-                const token = Cookies.get('csrftoken'); // Retrieve CSRF token from cookies
+                const token = Cookies.get('csrftoken');
                 setCsrfToken(token);
             } catch (error) {
                 
@@ -29,7 +29,7 @@ export const Login = ({ setAuth, setHasLoggedOut }) => {
         };
 
         fetchCSRFToken();
-    }, []); // Run once on component mount
+    }, []);
 
     const disallowedChars = /[<>"'&]/;
 
@@ -102,7 +102,6 @@ export const Login = ({ setAuth, setHasLoggedOut }) => {
             return;
         }
 
-         // Escape data before sending to the backend
          const escapedData = {
             username: escapeHtml(username.trim()),
             password: escapeHtml(password.trim()),
@@ -113,22 +112,17 @@ export const Login = ({ setAuth, setHasLoggedOut }) => {
             const res = await axios.post('https://ict2216group30.store/api/login/', escapedData, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken // Include CSRF token in headers
+                    'X-CSRFToken': csrfToken
                 },
-                withCredentials: true // Important: include credentials (cookies)
+                withCredentials: true
             });
-            // Save the JWT token to localStorage
             localStorage.setItem('access_token', res.data.access);
             localStorage.setItem('refresh_token', res.data.refresh);
             localStorage.setItem('isLoggedIn', true);
             localStorage.setItem('username', escapedData.username);
-            // axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.access}`;
             setAuth(res.data);
-
-            // Reset hasLoggedOut to false upon successful login
             setHasLoggedOut(false);
 
-            // Check if user is admin and navigate accordingly
             if (res.data.is_superuser) {
                 navigate("/admin");
             } else {
@@ -138,7 +132,7 @@ export const Login = ({ setAuth, setHasLoggedOut }) => {
             Swal.fire({
                 icon: 'success',
                 title: 'Login Successful',
-                text: 'Welcome back ' + escapeHtml(username.trim()) + '.', // Escape username
+                text: 'Welcome back ' + escapeHtml(username.trim()) + '.',
             });
         } catch (err) {
             if (err.response && err.response.status === 403) {
@@ -187,8 +181,8 @@ export const Login = ({ setAuth, setHasLoggedOut }) => {
                     <label>OTP Password</label>
                     <input
                         type="text"
-                        name="otp" // Name should match the state key
-                        value={otp} // Bind value to otp
+                        name="otp"
+                        value={otp}
                         onChange={e => onChange(e)}
                         required
                     />

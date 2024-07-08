@@ -4,7 +4,7 @@ import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import QRCode from 'qrcode.react';
 import './login.css';
-import Cookies from 'js-cookie'; // Import Cookies library
+import Cookies from 'js-cookie';
 
 export const TwoFALogin = ({ setAuth }) => {
     const [formData, setFormData] = useState({
@@ -20,13 +20,12 @@ export const TwoFALogin = ({ setAuth }) => {
     const { username, password, otpToken } = formData;
 
     useEffect(() => {
-        // Fetch the CSRF token from the backend
         const fetchCSRFToken = async () => {
             try {
                 const response = await axios.get('https://ict2216group30.store/api/get_csrf_token/', {
-                    withCredentials: true // Include credentials (cookies)
+                    withCredentials: true
                 });
-                const token = Cookies.get('csrftoken'); // Retrieve CSRF token from cookies
+                const token = Cookies.get('csrftoken');
                 setCsrfToken(token);
             } catch (error) {
                 
@@ -34,7 +33,7 @@ export const TwoFALogin = ({ setAuth }) => {
         };
 
         fetchCSRFToken();
-    }, []); // Run once on component mount
+    }, []);
 
     const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -44,9 +43,9 @@ export const TwoFALogin = ({ setAuth }) => {
             const res = await axios.post('https://ict2216group30.store/api/two-factor-login/', { username, password }, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken // Include CSRF token in headers
+                    'X-CSRFToken': csrfToken
                 },
-                withCredentials: true // Include credentials (cookies)
+                withCredentials: true
             });
             setOtpSecret(res.data.otp_secret);
             setOtpProvisioningUri(res.data.otp_provisioning_uri);
@@ -67,9 +66,9 @@ export const TwoFALogin = ({ setAuth }) => {
             const res = await axios.post('https://ict2216group30.store/api/two-factor-setup/', { username, password, otpToken }, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken // Include CSRF token in headers
+                    'X-CSRFToken': csrfToken
                 },
-                withCredentials: true // Include credentials (cookies)
+                withCredentials: true
             });
             Swal.fire({
                 icon: 'success',

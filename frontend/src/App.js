@@ -30,16 +30,11 @@ import AdminDashboard from './admin/pages/dashboard/AdminDashboard';
 import AddProduct from './admin/pages/product/AddProduct';
 import EditProduct from './admin/pages/product/EditProduct';
 import ManageUsers from "./admin/pages/users/ManageUsers";
-// import { getAccessToken } from "./user/utils/auth";
-// import axios from "axios";
-// import { jwtDecode } from "jwt-decode";
-// import { ShopContextProvider } from "./user/context/shop-context";
-// import { SearchProvider } from "./user/context/search-context";
 
 
 const AppContent = ({ auth, logout, setAuth, hasLoggedOut, setHasLoggedOut }) => {
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-  useAutoLogout(logout, 1000000, hasLoggedOut, setHasLoggedOut); // Call the hook inside a component within Router
+  useAutoLogout(logout, 1000000, hasLoggedOut, setHasLoggedOut);
 
 
   const userRoutes = (

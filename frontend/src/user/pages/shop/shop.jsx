@@ -1,11 +1,11 @@
 import React, { useEffect, useContext, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";  // Import Link from react-router-dom
+import { Link } from "react-router-dom";
 import { Product } from "./product";
 import { SearchInput } from "./searchInput";
 import { SearchContext } from "../../context/search-context";
 import "./shop.css";
-import Cookies from 'js-cookie'; // Import Cookies library
+import Cookies from 'js-cookie';
 
 export const Shop = () => {
   const { searchResults, setProducts, setSearchResults } = useContext(SearchContext);

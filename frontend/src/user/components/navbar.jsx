@@ -28,7 +28,6 @@ export const Navbar = ({ auth, logout }) => {
         <UserCircle size={36} /> 
         {auth ? (
           <div className="account-options">
-            {/* <p>Hello, {auth.username}</p> */}
             <Link to="/account">Account</Link>
             <Link to="/payments">Payment Methods</Link>
             <Link to="/addresses">Addresses</Link>
