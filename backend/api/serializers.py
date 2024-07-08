@@ -15,8 +15,8 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         password = validated_data.pop('password')
 
-        salt = os.urandom(16)
-        hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000)
+        salt = os.urandom(32)
+        hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 600000)
 
         user = User(
             username=validated_data['username'],
@@ -42,7 +42,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         if password:
             salt = instance.salt
             instance.password = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), bytes.fromhex(salt),
-                                                    100000).hex()
+                                                    600000).hex()
 
         return super().update(instance, validated_data)
     

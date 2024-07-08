@@ -14,9 +14,9 @@ class CustomUserManager(BaseUserManager):
         email = self.normalize_email(email)
         
         # Generate a salt
-        salt = os.urandom(16)
+        salt = os.urandom(32)
         # Iteratively Hash the password with the salt
-        hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000).hex()
+        hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 600000).hex()
 
         user = self.model(
             email=email,
@@ -87,7 +87,7 @@ class User(AbstractBaseUser):
         return self.username
 
     def check_password(self, raw_password):
-        hashed_password = hashlib.pbkdf2_hmac('sha256', raw_password.encode('utf-8'), bytes.fromhex(self.salt), 100000).hex()
+        hashed_password = hashlib.pbkdf2_hmac('sha256', raw_password.encode('utf-8'), bytes.fromhex(self.salt), 600000).hex()
         return self.password == hashed_password
 
     def has_perm(self, perm, obj=None):
