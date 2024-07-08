@@ -224,6 +224,7 @@ export const Payments = () => {
                         onChange={onChange}
                         required
                     />
+                    {errors.account_no && <span className="error">{errors.account_no}</span>}
                 </div>
                 <div>
                     <label>Expiry Date</label>

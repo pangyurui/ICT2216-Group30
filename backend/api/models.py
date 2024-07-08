@@ -123,7 +123,7 @@ class UserPayment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payments')
     payment_type = models.CharField(max_length=255, choices=PAYMENT_TYPE_CHOICES)
     provider = models.CharField(max_length=255, choices=PROVIDER_CHOICES)
-    account_no = models.CharField(max_length=255)
+    account_no = models.CharField(max_length=255, unique=True)
     expiry = models.CharField(max_length=5)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
