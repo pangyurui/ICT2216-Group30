@@ -47,7 +47,12 @@ export const Checkout = () => {
 
     const handleCheckout = async () => {
         if (!selectedPaymentMethod || !selectedAddress) {
-            alert('Please select a payment method and delivery address.');
+            Swal.fire({
+                title: 'Incomplete Information',
+                text: 'Please select a payment method and delivery address.',
+                icon: 'warning',
+                confirmButtonText: 'OK'
+            });
             return;
         }
 
