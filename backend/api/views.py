@@ -120,7 +120,6 @@ def OrganisationCreateView(request):
         return JsonResponse({'detail': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
-# Read User
 class UserAccountView(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -130,7 +129,6 @@ class UserAccountView(generics.RetrieveAPIView):
         return self.request.user
 
 
-# Update User
 class UserUpdateView(generics.UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserUpdateSerializer
@@ -140,7 +138,6 @@ class UserUpdateView(generics.UpdateAPIView):
         return self.request.user
 
 
-# Delete User
 class UserDeleteView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -208,7 +205,6 @@ class UserList(generics.ListAPIView):
             if not is_super_user:
                 raise AuthenticationFailed('You cannot perform this action')
 
-            # If superuser, proceed to get the user list
             return self.list(request, *args, **kwargs)
 
         except (User.DoesNotExist, IndexError, KeyError):
@@ -240,7 +236,6 @@ class LoginView(generics.GenericAPIView):
         except ValidationError as e:
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-        # serializer = self.get_serializer(data=request.data)
         serializer = LoginSerializer(data=sanitized_data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
@@ -369,7 +364,7 @@ class RegisterView(generics.CreateAPIView):
     def get_common_passwords(self):
         try:
             response = requests.get('https://ict2216group30.store/api/common-passwords/')
-            response.raise_for_status()  # Will raise an HTTPError for bad responses
+            response.raise_for_status()
             return response.json()
         except requests.RequestException as e:
             logging.error(f"Error fetching common passwords: {e}")
@@ -413,7 +408,7 @@ class CartItemListCreateView(generics.ListCreateAPIView):
     queryset = CartItem.objects.all()
     authentication_classes = [JWTAuthentication]
     serializer_class = CartItemSerializer
-    permission_classes = [IsAuthenticated]  # Ensure the user is authenticated
+    permission_classes = [IsAuthenticated]
 
     def get_user_from_token(self, request):
         jwt_authenticator = JWTAuthentication()
@@ -522,7 +517,6 @@ class CartItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         data = request.data
 
-        # Check for quantity in the update request
         quantity = data.get('quantity')
         if quantity is not None and int(quantity) == 0:
             instance.delete()
@@ -536,7 +530,6 @@ class CartItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         return Response(serializer.data)
 
 
-# User = get_user_model()
 class CartAPIView(generics.RetrieveAPIView):
     serializer_class = CartSerializer
     authentication_classes = [JWTAuthentication]
@@ -565,22 +558,18 @@ class CartAPIView(generics.RetrieveAPIView):
         return Response(serializer.data)
 
     def get(self, request, *args, **kwargs):
-        # Manually authenticate the user using JWT
         jwt_authenticator = JWTAuthentication()
         try:
-            # Extract the token from the Authorization header
             auth_header = request.headers.get('Authorization')
             if not auth_header:
                 raise AuthenticationFailed('Authorization header is missing')
             token_str = auth_header.split()[1]
 
-            # Validate and decode the token
             validated_token = jwt_authenticator.get_validated_token(token_str)
             user_id = validated_token.get('user_id')
             if not user_id:
                 raise AuthenticationFailed('User ID not found in token')
 
-            # Get the user from the custom user model
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
             raise AuthenticationFailed('User not found')
@@ -627,7 +616,7 @@ class OrderListView(generics.ListAPIView):
 
 # Product view
 class ProductDetail(generics.RetrieveAPIView):
-    queryset = Product.objects.all().prefetch_related('reviews')  # Ensures reviews are fetched efficiently
+    queryset = Product.objects.all().prefetch_related('reviews')
     serializer_class = ProductSerializer
 
 
@@ -661,20 +650,6 @@ class ProductDeleteView(generics.DestroyAPIView):
         except (User.DoesNotExist, IndexError, KeyError):
             raise AuthenticationFailed('Invalid token or user not found')
 
-
-# class ProductUpdateView(generics.UpdateAPIView):
-#     queryset = Product.objects.all()
-#     serializer_class = ProductSerializer
-#     parser_classes = (MultiPartParser, FormParser)
-
-#     def put(self, request, *args, **kwargs):
-#         product = self.get_object()
-#         serializer = self.serializer_class(product, data=request.data, partial=True)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         else:
-#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ProductUpdateView(generics.UpdateAPIView):
     queryset = Product.objects.all()
@@ -710,19 +685,6 @@ class ProductUpdateView(generics.UpdateAPIView):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except (User.DoesNotExist, IndexError, KeyError):
             raise AuthenticationFailed('Invalid token or user not found')
-    # queryset = Product.objects.all()
-    # serializer_class = ProductSerializer
-    # parser_classes = (MultiPartParser, FormParser)  
-
-    # def put(self, request, *args, **kwargs):
-    #     self.serializer_class = ProductSerializer
-    #     product = self.get_object()
-    #     serializer = self.serializer_class(product, data=request.data, partial=True)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data, status=status.HTTP_200_OK)
-    #     else:
-    #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductCreateView(generics.CreateAPIView):
@@ -754,8 +716,8 @@ class ProductCreateView(generics.CreateAPIView):
                     except IntegrityError as e:
                         return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
                 else:
-                    print("Received data: ", request.data)  # Log received data
-                    print("Errors: ", serializer.errors)  # Log validation errors
+                    print("Received data: ", request.data)
+                    print("Errors: ", serializer.errors)
                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         except (User.DoesNotExist, IndexError, KeyError):
@@ -792,7 +754,7 @@ class OrganisationRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIVie
                     if 'image' in request.FILES:
                         image_file = request.FILES['image']
                         saved_path = default_storage.save(image_file.name, image_file)
-                        organisation.image = saved_path  # Save the path to your image field
+                        organisation.image = saved_path
                     serializer.save()
                     logging_library.log_access_message(request, "Organisation name: " + str(
                         organisation.name) + " Request info: " + str(request.data), "ORGANISATION UPDATE")
@@ -821,18 +783,6 @@ class OrganisationRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIVie
             raise AuthenticationFailed('Invalid token or user not found')
 
 
-# class ProductReviewListCreateView(generics.ListCreateAPIView):
-#     queryset = ProductReview.objects.all()
-#     serializer_class = ProductReviewSerializer
-#     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-#     def perform_create(self, serializer):
-#         serializer.save(user=self.request.user) 
-
-# class ProductReviewRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-#    queryset = ProductReview.objects.all()
-#    serializer_class = ProductReviewSerializer
-
 class ProductReviewListCreateView(generics.ListCreateAPIView):
     serializer_class = ProductReviewSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -844,13 +794,6 @@ class ProductReviewListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         product_id = self.kwargs['pk']
         product = get_object_or_404(Product, id=product_id)
-
-        # To ensure that users only able to review ONCE per product
-        # if ProductReview.objects.filter(product=product, user=self.request.user).exists():
-
-        #     messages.error(self.request, 'You have already reviewed this product.')
-        #     raise ValidationError('You have already reviewed this product.')
-
         serializer.save(user=self.request.user, product=product)
 
 
@@ -868,27 +811,22 @@ class ProductReviewRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIVi
             raise AuthenticationFailed('Authorization header is missing')
 
         try:
-            # Extract the token from the Authorization header
             token_str = auth_header.split()[1]
-            # Validate and decode the token
             validated_token = jwt_authenticator.get_validated_token(token_str)
             user_id = validated_token.get('user_id')
 
             if not user_id:
                 raise AuthenticationFailed('Invalid token or user ID not found')
 
-            # Get the product review object by its ID
             review_id = kwargs.get('pk')
             try:
                 review = ProductReview.objects.get(pk=review_id)
             except ProductReview.DoesNotExist:
                 raise NotFound(detail="Product Review does not exist", code=status.HTTP_404_NOT_FOUND)
 
-            # Check if the review belongs to the authenticated user
             if review.user_id != user_id:
                 raise AuthenticationFailed('You do not have permission to update this review')
 
-            # Proceed with updating the review
             serializer = self.get_serializer(review, data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
@@ -942,11 +880,9 @@ class TwoFactorLoginView(generics.GenericAPIView):
         access_token = refresh.access_token
         access_token['is_superuser'] = user.is_superuser
 
-        # check if user has 2FA enabled, if yes then dont allow
         if user.verified_twofactor == 1:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        # Generate OTP secret for user each time page is accessed
         user.otp_secret = pyotp.random_base32()
         user.save()
 
@@ -982,7 +918,6 @@ class TwoFactorSetupView(generics.GenericAPIView):
         if not totp.verify(otp_token):
             return Response({'detail': 'Invalid OTP token.'}, status=status.HTTP_401_UNAUTHORIZED)
 
-        # Update the verified_twofactor flag
         user.verified_twofactor = True
         user.save()
         logging_library.log_access_message(request, ' 2FA SETUP', "2FA")

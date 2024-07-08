@@ -15,13 +15,8 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         password = validated_data.pop('password')
 
-        # Generate a salt
         salt = os.urandom(16)
-        # Iteratively Hash the password with the salt
         hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000)
-        # 2FA
-        # secret_generated = pyotp.random_base32()
-        # print(secret_generated)  # this is what is used to register google auth
 
         user = User(
             username=validated_data['username'],
@@ -30,8 +25,6 @@ class UserSerializer(serializers.ModelSerializer):
             salt=salt.hex(),
             first_name=validated_data.get('first_name', ''),
             last_name=validated_data.get('last_name', ''),
-            # otp_secret=secret_generated
-
         )
 
         user.save()
@@ -47,7 +40,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         password = validated_data.pop('password', None)
         if password:
-            salt = instance.salt  # Assuming salt is stored with user model
+            salt = instance.salt
             instance.password = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), bytes.fromhex(salt),
                                                     100000).hex()
 
@@ -94,7 +87,7 @@ class LoginSerializer(serializers.Serializer):
 
 class ProductReviewSerializer(serializers.ModelSerializer):
     username = serializers.ReadOnlyField(source='user.username')
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())  # Automatically set user to the current user
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     class Meta:
         model = ProductReview
         fields = '__all__'
@@ -108,19 +101,12 @@ class ProductReviewSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     reviews = ProductReviewSerializer(many=True, read_only=True)
-    # category_id = serializers.PrimaryKeyRelatedField(
-    #     queryset=ProductCategory.objects.all(),
-    #     source='category',
-    #     write_only=False,
-    #     required=False,  # If not always required
-    #     allow_null=True,  # If null is allowed
-    # )
     organisation_id = serializers.PrimaryKeyRelatedField(
         queryset=Organisation.objects.all(),
         source='organisation',
         write_only=False,
-        required=False,  # If not always required
-        allow_null=True,  # If null is allowed
+        required=False,
+        allow_null=True,
     )
 
     class Meta:
@@ -131,32 +117,26 @@ class ProductSerializer(serializers.ModelSerializer):
             'deleted_at', 'reviews')
 
     def create(self, validated_data):
-        # Extracting and handling the relationships separately if needed
-        # category = validated_data.pop('category', None)
         organisation = validated_data.pop('organisation', None)
-        # product = Product.objects.create(category=category, organisation=organisation, **validated_data)
         product = Product.objects.create(organisation=organisation, **validated_data)
         return product
 
     def update(self, instance, validated_data):
-        # update logic for your fields
         instance.name = validated_data.get('name', instance.name)
         instance.description = validated_data.get('description', instance.description)
         instance.price = validated_data.get('price', instance.price)
-        # instance.category = validated_data.get('category', instance.category)
         instance.organisation = validated_data.get('organisation', instance.organisation)
         instance.save()
         return instance
 
     def validate_deleted_at(self, value):
         if isinstance(value, datetime.datetime):
-            return value  # Return the datetime object if it's already a datetime
+            return value
 
-        if value in ['null', None, '']:  # Handle 'null' as a string, actual None, and empty string
+        if value in ['null', None, '']:
             return None
 
         try:
-            # Convert string to datetime object
             return datetime.datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%fZ')
         except ValueError:
             raise serializers.ValidationError(
