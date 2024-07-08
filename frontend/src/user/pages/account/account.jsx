@@ -108,60 +108,63 @@ export const Account = ({ setAuth }) => {
         <div className="account-container">
             <h2>Account Details</h2>
             {user && (
-                <form className="account-form" onSubmit={onSubmit}>
-                    <div>
-                        <label>Username</label>
-                        <input
-                            type="text"
-                            name="username"
-                            value={formData.username}
-                            onChange={onChange}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label>Email</label>
-                        <input
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={onChange}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label>First Name</label>
-                        <input
-                            type="text"
-                            name="first_name"
-                            value={formData.first_name}
-                            onChange={onChange}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label>Last Name</label>
-                        <input
-                            type="text"
-                            name="last_name"
-                            value={formData.last_name}
-                            onChange={onChange}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label>Password (leave blank to keep current password)</label>
-                        <input
-                            type="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={onChange}
-                        />
-                    </div>
-                    <button type="submit">Update</button>
-                </form>
+                <div className="account-container">
+                    <form className="account-form" onSubmit={onSubmit}>
+                        <div>
+                            <label>Username</label>
+                            <input
+                                type="text"
+                                name="username"
+                                value={formData.username}
+                                onChange={onChange}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label>Email</label>
+                            <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={onChange}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label>First Name</label>
+                            <input
+                                type="text"
+                                name="first_name"
+                                value={formData.first_name}
+                                onChange={onChange}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label>Last Name</label>
+                            <input
+                                type="text"
+                                name="last_name"
+                                value={formData.last_name}
+                                onChange={onChange}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label>Password (leave blank to keep current password)</label>
+                            <input
+                                type="password"
+                                name="password"
+                                value={formData.password}
+                                onChange={onChange}
+                            />
+                        </div>
+                        <button type="submit">Update</button>
+                    </form>
+                    <button className="delete-button" onClick={onDelete}>Delete Account</button>
+                </div>
             )}
-            <button className="delete-button" onClick={onDelete}>Delete Account</button>
+            
         </div>
     );
 };
