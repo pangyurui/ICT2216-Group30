@@ -34,7 +34,7 @@ import ManageUsers from "./admin/pages/users/ManageUsers";
 
 const AppContent = ({ auth, logout, setAuth, hasLoggedOut, setHasLoggedOut }) => {
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-  useAutoLogout(logout, 1000000, hasLoggedOut, setHasLoggedOut);
+  useAutoLogout(logout, 60000, hasLoggedOut, setHasLoggedOut);
 
 
   const userRoutes = (
