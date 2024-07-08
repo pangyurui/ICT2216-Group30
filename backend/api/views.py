@@ -388,7 +388,7 @@ class RegisterView(generics.CreateAPIView):
     @method_decorator(csrf_protect)
     def create(self, request, *args, **kwargs):
         logging.info("Access register")
-        
+        logging_library.log_access_message(request, "Access register","REGISTER")
         try:
             sanitized_data = self.sanitize_and_validate_data(request.data)
         except ValidationError as e:
@@ -613,6 +613,7 @@ class OrderListView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        logging_library.log_access_message(self.request, 'Order list retrieved', "ORDER HISTORY")
         return Order.objects.filter(user=self.request.user).order_by('-created_at')
 
 
