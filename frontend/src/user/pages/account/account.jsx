@@ -76,7 +76,7 @@ export const Account = ({ setAuth }) => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    await axiosAuth.delete('https://ict2216group30.store/api/account/delete/', {
+                    await axiosAuth.delete('account/delete/', {
                     headers: {
                         'X-CSRFToken': csrfToken
                     }
