@@ -881,7 +881,36 @@ class ProductReviewRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIVi
 
         except (AuthenticationFailed, IndexError, KeyError) as e:
             return Response({'error': str(e)}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    def delete(self, request, *args, **kwargs):
+        jwt_authenticator = JWTAuthentication()
+        auth_header = request.headers.get('Authorization')
+        
+        if not auth_header:
+            raise AuthenticationFailed('Authorization header is missing')
 
+        try:
+            token_str = auth_header.split()[1]
+            validated_token = jwt_authenticator.get_validated_token(token_str)
+            user_id = validated_token.get('user_id')
+
+            if not user_id:
+                raise AuthenticationFailed('Invalid token or user ID not found')
+
+            review_id = kwargs.get('pk')
+            try:
+                review = ProductReview.objects.get(pk=review_id)
+            except ProductReview.DoesNotExist:
+                raise NotFound(detail="Product Review does not exist", code=status.HTTP_404_NOT_FOUND)
+
+            if review.user_id != user_id:
+                raise AuthenticationFailed('You do not have permission to delete this review')
+
+            review.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        except (AuthenticationFailed, IndexError, KeyError) as e:
+            return Response({'error': str(e)}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 
