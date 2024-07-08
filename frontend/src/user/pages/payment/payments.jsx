@@ -29,6 +29,29 @@ export const Payments = () => {
 
     const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 
+    const luhnCheck = (cardNumber) => {
+        const digits = cardNumber.split('').map(Number);
+        const checksum = digits.reduceRight((acc, digit, idx) => {
+            if (idx % 2 === digits.length % 2) {
+                digit *= 2;
+                if (digit > 9) digit -= 9;
+            }
+            return acc + digit;
+        }, 0);
+        return checksum % 10 === 0;
+    };
+
+    const validateCreditCardNumber = (account_no) => {
+        const regex = /^\d{13,19}$/;
+        if (!regex.test(account_no)) {
+            return 'Credit card number must be between 13 and 19 digits';
+        }
+        if (!luhnCheck(account_no)) {
+            return 'Invalid credit card number';
+        }
+        return null;
+    };
+
     const validateExpiryDate = (expiry) => {
         const regex = /^\d{2}\/\d{2}$/;
         if (!regex.test(expiry)) {
@@ -52,9 +75,10 @@ export const Payments = () => {
     const onSubmit = async e => {
         e.preventDefault();
         const expiryError = validateExpiryDate(formData.expiry);
+        const accountNumberError = validateCreditCardNumber(formData.account_no);
 
-        if (expiryError) {
-            setErrors({ expiry: expiryError });
+        if (expiryError || accountNumberError) {
+            setErrors({ expiry: expiryError, account_no: accountNumberError });
             return;
         }
 
@@ -115,9 +139,10 @@ export const Payments = () => {
     const onUpdate = async e => {
         e.preventDefault();
         const expiryError = validateExpiryDate(formData.expiry);
+        const accountNumberError = validateCreditCardNumber(formData.account_no);
 
-        if (expiryError) {
-            setErrors({ expiry: expiryError });
+        if (expiryError || accountNumberError) {
+            setErrors({ expiry: expiryError, account_no: accountNumberError });
             return;
         }
 
@@ -135,7 +160,7 @@ export const Payments = () => {
                 title: 'Updated Successfully!',
                 html: `
                     <p><strong>Provider:</strong> ${res.data.provider}</p>
-                    <p><strong>Account Number:</strong> ${res.data.account_no}</p>
+                    <p><strong>Account Number:</strong> ${maskAccountNumber(res.data.account_no)}</p>
                     <p><strong>Expiry:</strong> ${res.data.expiry}</p>
                 `,
                 icon: 'success',
@@ -157,6 +182,10 @@ export const Payments = () => {
 
     const toggleExpand = id => {
         setExpandedPayment(expandedPayment === id ? null : id);
+    };
+
+    const maskAccountNumber = (accountNo) => {
+        return accountNo.slice(0, -4).replace(/./g, '*') + accountNo.slice(-4);
     };
 
     return (
@@ -217,7 +246,7 @@ export const Payments = () => {
                 {payments.map(payment => (
                     <li key={payment.id} onClick={() => toggleExpand(payment.id)}>
                         <div className="payment-summary">
-                            <span>{payment.provider}</span> - <span>{payment.account_no}</span>
+                            <span>{payment.provider}</span> - <span>{maskAccountNumber(payment.account_no)}</span>
                         </div>
                         {expandedPayment === payment.id && (
                             <div className="payment-details">

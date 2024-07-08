@@ -41,6 +41,10 @@ export const Checkout = () => {
         }
     };
 
+    const maskAccountNumber = (accountNo) => {
+        return accountNo.slice(0, -4).replace(/./g, '*') + accountNo.slice(-4);
+    };
+
     const handleCheckout = async () => {
         if (!selectedPaymentMethod || !selectedAddress) {
             alert('Please select a payment method and delivery address.');
@@ -109,7 +113,7 @@ export const Checkout = () => {
                     <option value="">Select Payment Method</option>
                     {paymentMethods.map(method => (
                         <option key={method.id} value={method.id}>
-                            {method.payment_type} - {method.provider} - {method.account_no} - {method.expiry}
+                            {method.payment_type} - {method.provider} - {maskAccountNumber(method.account_no)} - {method.expiry}
                         </option>
                     ))}
                 </select>
