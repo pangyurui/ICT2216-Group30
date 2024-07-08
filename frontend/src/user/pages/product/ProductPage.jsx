@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import "./productPage.css";
-import Cookies from 'js-cookie'; // Import Cookies library if needed
+import Cookies from 'js-cookie';
 import "./StarRating.css"; 
 import StarRating from './StarRating'; 
 
@@ -22,9 +22,10 @@ export const ProductPage = () => {
     rating: 1,
   });
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useState('');
+  const [editingReviewId, setEditingReviewId] = useState(null);
 
   useEffect(() => {
-    // Fetch CSRF token
     const fetchCSRFToken = async () => {
       try {
         const response = await axios.get('https://ict2216group30.store/api/get_csrf_token/');
@@ -33,9 +34,6 @@ export const ProductPage = () => {
       }
     };
 
-    fetchCSRFToken();
-
-    // Fetch product details
     const fetchProductDetails = () => {
       axios.get(`https://ict2216group30.store/api/products/${id}/`, {
         headers: {
@@ -52,7 +50,6 @@ export const ProductPage = () => {
         });
     };
 
-    // Fetch reviews for the product
     const fetchReviews = () => {
       axios.get(`https://ict2216group30.store/api/products/${id}/reviews/`, {
         headers: {
@@ -63,6 +60,7 @@ export const ProductPage = () => {
           setReviews(response.data);
         })
         .catch(error => {
+          console.error('Error fetching reviews:', error);
         });
     };
 
@@ -70,6 +68,9 @@ export const ProductPage = () => {
       const token = localStorage.getItem('access_token');
       if (token) {
         setIsLoggedIn(true);
+        const user = localStorage.getItem('username'); 
+        console.log('Username from localStorage:', user);
+        setLoggedInUser(user);
       }
     };
 
@@ -90,7 +91,7 @@ export const ProductPage = () => {
 
   const handleReviewSubmit = (e) => {
     e.preventDefault();
-    setIsSubmitting(true); // Disable the submit button
+    setIsSubmitting(true);
     const token = localStorage.getItem('access_token'); 
     const formData = {
         title: reviewForm.title,
@@ -99,7 +100,10 @@ export const ProductPage = () => {
         product: id, 
     };
 
-    axios.post(`https://ict2216group30.store/api/products/${id}/reviews/`, formData, {
+    const axiosMethod = editingReviewId ? 'put' : 'post';
+    const axiosUrl = editingReviewId ? `https://ict2216group30.store/api/reviews/${editingReviewId}/` : `https://ict2216group30.store/api/products/${id}/reviews/`;
+
+    axios[axiosMethod](axiosUrl, formData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
@@ -108,16 +112,46 @@ export const ProductPage = () => {
     })
     .then(response => {
         // Handle successful submission
-        setReviews([...reviews, response.data]); // Update reviews state with new review
-        setIsSubmitting(false); // Re-enable the button
-        setShowReviewForm(false);
-        
-    })
-    .catch(error => {
-        // Handle errors
-        setIsSubmitting(false); // Re-enable the button
-        alert('Failed to submit review: ');
+        if (editingReviewId) {
+          setReviews(reviews.map(review => review.id === editingReviewId ? response.data : review));
+      } else {
+          setReviews([...reviews, response.data]);
+      }
+      setIsSubmitting(false);
+      setShowReviewForm(false);
+      setEditingReviewId(null); // Reset editingReviewId after submission
+  })
+  .catch(error => {
+      // Handle errors
+      setIsSubmitting(false);
+      alert('Failed to submit review: ' + error.message);
+  });
+};
+
+const handleReviewDelete = (reviewId) => {
+  const token = localStorage.getItem('access_token');
+  axios.delete(`http://127.0.0.1:8000/api/reviews/${reviewId}/`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'X-CSRFToken': csrfToken
+    }
+  })
+  .then(response => {
+    setReviews(reviews.filter(review => review.id !== reviewId));
+  })
+  .catch(error => {
+    console.error('Error deleting review:', error);
     });
+  };
+
+  const handleReviewEdit = (review) => {
+    setReviewForm({
+      title: review.title,
+      desc: review.desc,
+      rating: review.rating
+    });
+    setEditingReviewId(review.id);
+    setShowReviewForm(true);
   };
 
   if (loading) {
@@ -139,7 +173,6 @@ export const ProductPage = () => {
         <h1>{product.name}</h1>
         <p>{product.description}</p>
         <p>Price: ${product.price}</p>
-        {/* Add to cart button */}
       </div>
 
       <div className="productReviews">
@@ -150,7 +183,15 @@ export const ProductPage = () => {
               <li key={review.id}>
                 <strong>{review.title}</strong>
                 <p>{review.desc}</p>
-                <StarRating rating={review.rating} onRatingChange={null} /> {/* Display star rating for each review */}
+                <p>Reviewed by: {review.username}</p>
+                <StarRating rating={review.rating} onRatingChange={null} /> 
+                {console.log(`loggedInUser: ${loggedInUser}, review.username: ${review.username.trim().toLowerCase()}`)}
+                {loggedInUser === review.username.trim().toLowerCase() && (
+                  <div>
+                    <button className="editButton" onClick={() => handleReviewEdit(review)}>Edit</button>
+                    <button className="deleteButton" onClick={() => handleReviewDelete(review.id)}>Delete</button>
+                  </div>
+                )}
               </li>
             ))}
           </ul>
@@ -158,7 +199,6 @@ export const ProductPage = () => {
         {isLoggedIn && (
           <button className="leaveReviewButton" onClick={() => setShowReviewForm(!showReviewForm)}>Leave a review</button>
         )}
-        {/* <button className="leaveReviewButton" onClick={() => setShowReviewForm(!showReviewForm)}>Leave a review</button> */}
         {showReviewForm && (
           <div className="reviewFormContainer">
             <form className="reviewForm" onSubmit={handleReviewSubmit}>
@@ -169,11 +209,8 @@ export const ProductPage = () => {
                 <textarea name="desc" value={reviewForm.desc} onChange={handleInputChange} required />
               </label>
               <label>Rating:
-                <StarRating rating={reviewForm.rating} onRatingChange={handleRatingChange} /> {/* Add star rating input */}
+                <StarRating rating={reviewForm.rating} onRatingChange={handleRatingChange} />
               </label>
-              {/* <label>Rating:
-                <input type="number" name="rating" min="1" max="5" value={reviewForm.rating} onChange={handleInputChange} required />
-              </label> */}
               <button type="submit" disabled={isSubmitting}>Submit Review</button>
             </form>
           </div>

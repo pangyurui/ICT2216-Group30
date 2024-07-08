@@ -62,7 +62,6 @@ class CustomUserManager(BaseUserManager):
 
 class User(AbstractBaseUser):
 
-    current_session_token = models.CharField(max_length=255, null=True, blank=True)
     username = models.CharField(max_length=255, unique=True)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=255)
@@ -107,8 +106,6 @@ class UserAddress(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
-
-    session_token = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return f"{self.address_line1}, {self.city}, {self.country}"

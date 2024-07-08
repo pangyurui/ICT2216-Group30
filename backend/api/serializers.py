@@ -93,6 +93,7 @@ class LoginSerializer(serializers.Serializer):
         return data
 
 class ProductReviewSerializer(serializers.ModelSerializer):
+    username = serializers.ReadOnlyField(source='user.username')
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())  # Automatically set user to the current user
     class Meta:
         model = ProductReview
@@ -200,7 +201,8 @@ class OrganisationSerializer(serializers.ModelSerializer):
 
 
 class ProductReviewSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())  # Automatically set user to the current user
+    username = serializers.ReadOnlyField(source='user.username')
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())  
     class Meta:
         model = ProductReview
         fields = '__all__'
