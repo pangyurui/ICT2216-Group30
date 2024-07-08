@@ -70,7 +70,6 @@ const ManageUsers = () => {
                         <th>USERNAME</th>
                         <th>EMAIL</th>
                         <th>ROLE</th>
-                        <th>ACTIONS</th> {/* Column for actions like delete */}
                     </tr>
                 </thead>
                 <tbody>
@@ -80,9 +79,6 @@ const ManageUsers = () => {
                             <td>{user.username}</td>
                             <td>{user.email}</td>
                             <td>{user.is_superuser ? 'Admin' : 'User'}</td>
-                            <td>
-                            <button className="button-delete" onClick={() => handleDelete(user.id)}>Delete</button>
-                            </td>
                         </tr>
                     ))}
                 </tbody>
