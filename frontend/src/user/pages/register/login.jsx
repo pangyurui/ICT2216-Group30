@@ -121,7 +121,7 @@ export const Login = ({ setAuth, setHasLoggedOut }) => {
             localStorage.setItem('access_token', res.data.access);
             localStorage.setItem('refresh_token', res.data.refresh);
             localStorage.setItem('isLoggedIn', true);
-            localStorage.setItem('username', sanitizedData.username);
+            localStorage.setItem('username', escapedData.username);
             // axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.access}`;
             setAuth(res.data);
 
