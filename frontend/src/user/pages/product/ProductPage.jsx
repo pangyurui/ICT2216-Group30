@@ -159,7 +159,7 @@ const handleReviewDelete = (reviewId) => {
   }
 
   if (error) {
-    return <div>Error fetching product: {error.message}</div>;
+    return <div>Error fetching product</div>;
   }
 
   if (!product) {
