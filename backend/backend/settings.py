@@ -36,6 +36,7 @@ ALLOWED_HOSTS = ['ict2216group30.store']
 # Application definition
 
 INSTALLED_APPS = [
+    "csp",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "csp.middleware.CSPMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -62,6 +64,19 @@ MIDDLEWARE = [
     'logger.middleware_logger.LoggingMiddleware',
     # 'api.middleware.check_session_token',
 ]
+
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_SCRIPT_SRC = ("'self'", "https://cdnjs.cloudflare.com", "'nonce-<random-nonce>'")
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com")
+CSP_IMG_SRC = ("'self'", "data:", "https://your-image-cdn.com")
+CSP_CONNECT_SRC = ("'self'", "https://your-api-endpoint.com")
+CSP_FRAME_SRC = ("'self'",)
+CSP_FONT_SRC = ("'self'", "https://fonts.gstatic.com")
+CSP_OBJECT_SRC = ("'none'",)
+CSP_MEDIA_SRC = ("'self'",)
+CSP_BASE_URI = ("'self'",)
+CSP_FORM_ACTION = ("'self'",)
+CSP_FRAME_ANCESTORS = ("'self'",)
 
 CORS_ORIGIN_ALLOW_ALL = True
 
