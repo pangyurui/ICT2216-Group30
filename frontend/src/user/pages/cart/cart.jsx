@@ -13,7 +13,7 @@ export const Cart = () => {
   useEffect(() => {
     const fetchCartAndItems = async () => {
       try {
-        const token = Cookies.get('access_token');
+        const token = localStorage.getItem('access_token');
         
         if (!token) {
           Swal.fire({
