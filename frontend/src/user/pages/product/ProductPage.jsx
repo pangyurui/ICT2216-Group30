@@ -20,6 +20,7 @@ export const ProductPage = () => {
     title: '',
     desc: '',
     rating: 1,
+    image: null,
   });
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState('');
@@ -85,6 +86,10 @@ export const ProductPage = () => {
     setReviewForm(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleImageChange = (e) => {
+    setReviewForm(prev => ({ ...prev, image: e.target.files[0] }));
+  };
+
   const handleRatingChange = (rating) => {
     setReviewForm(prev => ({ ...prev, rating }));
   };
@@ -93,12 +98,14 @@ export const ProductPage = () => {
     e.preventDefault();
     setIsSubmitting(true);
     const token = localStorage.getItem('access_token'); 
-    const formData = {
-        title: reviewForm.title,
-        desc: reviewForm.desc,
-        rating: parseInt(reviewForm.rating), 
-        product: id, 
-    };
+    const formData = new FormData();
+    formData.append('title', reviewForm.title);
+    formData.append('desc', reviewForm.desc);
+    formData.append('rating', reviewForm.rating);
+    formData.append('product', id);
+    if (reviewForm.image) {
+      formData.append('image', reviewForm.image);
+    }
 
     const axiosMethod = editingReviewId ? 'put' : 'post';
     const axiosUrl = editingReviewId ? `https://ict2216group30.store/api/reviews/${editingReviewId}/` : `https://ict2216group30.store/api/products/${id}/reviews/`;
@@ -106,12 +113,11 @@ export const ProductPage = () => {
     axios[axiosMethod](axiosUrl, formData, {
         headers: {
             'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            'Content-Type': 'multipart/form-data',
             'X-CSRFToken': csrfToken
         }
     })
     .then(response => {
-        // Handle successful submission
         if (editingReviewId) {
           setReviews(reviews.map(review => review.id === editingReviewId ? response.data : review));
       } else {
@@ -119,10 +125,9 @@ export const ProductPage = () => {
       }
       setIsSubmitting(false);
       setShowReviewForm(false);
-      setEditingReviewId(null); // Reset editingReviewId after submission
+      setEditingReviewId(null);
   })
   .catch(error => {
-      // Handle errors
       setIsSubmitting(false);
       alert('Failed to submit review: ' + error.message);
   });
@@ -148,7 +153,8 @@ const handleReviewDelete = (reviewId) => {
     setReviewForm({
       title: review.title,
       desc: review.desc,
-      rating: review.rating
+      rating: review.rating,
+      image: null,
     });
     setEditingReviewId(review.id);
     setShowReviewForm(true);
@@ -184,7 +190,8 @@ const handleReviewDelete = (reviewId) => {
                 <strong>{review.title}</strong>
                 <p>{review.desc}</p>
                 <p>Reviewed by: {review.username}</p>
-                <StarRating rating={review.rating} onRatingChange={null} /> 
+                <StarRating rating={review.rating} onRatingChange={null} />
+                {review.image && <img src={review.image} alt="Review" className="reviewImage" />} 
                 {console.log(`loggedInUser: ${loggedInUser}, review.username: ${review.username.trim().toLowerCase()}`)}
                 {loggedInUser === review.username.trim().toLowerCase() && (
                   <div>
@@ -210,6 +217,10 @@ const handleReviewDelete = (reviewId) => {
               </label>
               <label>Rating:
                 <StarRating rating={reviewForm.rating} onRatingChange={handleRatingChange} />
+              </label>
+              <label>
+                Add Image:
+                <input type="file" name="image" onChange={handleImageChange} accept="image/*" />
               </label>
               <button type="submit" disabled={isSubmitting}>Submit Review</button>
             </form>
