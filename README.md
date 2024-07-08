@@ -29,9 +29,6 @@ Skip to the next section ("Run the Project") if you have completed the initial s
 1. Navigate to the 'charitycentral' directory and run the following command:
    > xcopy backend\backend\logger venv\Lib\site-packages\logger /E /I
 
-2. Navigate to venv\Lib\logger\middleware_logger.py and replace line 2 with:
-   > from logger.logging_library import log_exception, log_access
-
 1. Open MySQL Workbench.
    
 2. Setup a new connection and give it a connection name. The rest of the parameters can be left as default.
