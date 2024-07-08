@@ -93,18 +93,6 @@ def log_access(request, response, page_name):
     log_message(formatted_message)
 
 
-def log_access_register(request, page_name):
-    level = "INFO"
-    ip_address = get_ip_address(request)
-    username = request.user.username if request.user.is_authenticated else '-'
-    access_time = get_formatted_time()
-    request_method = request.method
-    user_agent = request.headers.get('User-Agent', '-')
-    content_length = len(request.content)
-    formatted_message = f'{access_time} {ip_address} [{level}] {username} "{request_method} {page_name} " "{request.body.decode("utf-8")}" {content_length} "{user_agent}"\n'
-    log_message(formatted_message)
-
-
 def log_access_message(request, message, level):
     ip_address = get_ip_address(request)
     access_time = get_formatted_time()

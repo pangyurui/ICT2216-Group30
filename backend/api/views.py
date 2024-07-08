@@ -38,7 +38,6 @@ import re
 from rest_framework.exceptions import ValidationError
 import requests
 
-
 import jwt
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -46,14 +45,17 @@ import os
 from django.utils import timezone
 import datetime
 
+
 @api_view(['GET'])
 def hello_world(request):
     return Response({'message': 'Hello, world!'})
+
 
 @ensure_csrf_cookie
 @require_http_methods(["GET", "OPTIONS"])
 def get_csrf_token(request):
     return JsonResponse({'detail': 'CSRF cookie set'})
+
 
 @csrf_exempt
 def OrganisationCreateView(request):
@@ -118,7 +120,6 @@ def OrganisationCreateView(request):
         return JsonResponse({'detail': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
-
 # Read User
 class UserAccountView(generics.RetrieveAPIView):
     queryset = User.objects.all()
@@ -148,8 +149,8 @@ class UserDeleteView(APIView):
         user.delete()
         logging_library.log_access_message(request, ' User account deleted', "DELETION")
         return Response(status=204)
-    
-    
+
+
 class UserPaymentListCreateView(generics.ListCreateAPIView):
     serializer_class = UserPaymentSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -161,13 +162,15 @@ class UserPaymentListCreateView(generics.ListCreateAPIView):
         logging_library.log_access_message(self.request, 'User address created ' + str(self.request.user), "ADDRESS")
         serializer.save(user=self.request.user)
 
+
 class UserPaymentRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserPaymentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return UserPayment.objects.filter(user=self.request.user)
-    
+
+
 class UserAddressListCreateView(generics.ListCreateAPIView):
     serializer_class = UserAddressSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -178,12 +181,14 @@ class UserAddressListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+
 class UserAddressRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserAddressSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return UserAddress.objects.filter(user=self.request.user)
+
 
 class UserList(generics.ListAPIView):
     queryset = User.objects.all()
@@ -208,7 +213,7 @@ class UserList(generics.ListAPIView):
 
         except (User.DoesNotExist, IndexError, KeyError):
             raise AuthenticationFailed('Invalid token or user not found')
-    
+
 
 @method_decorator(csrf_protect, name='post')
 class LogoutView(generics.GenericAPIView):
@@ -223,6 +228,7 @@ class LogoutView(generics.GenericAPIView):
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
 @method_decorator(csrf_protect, name='post')
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
@@ -233,7 +239,7 @@ class LoginView(generics.GenericAPIView):
             sanitized_data = self.sanitize_and_validate_data(request.data)
         except ValidationError as e:
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         # serializer = self.get_serializer(data=request.data)
         serializer = LoginSerializer(data=sanitized_data)
         serializer.is_valid(raise_exception=True)
@@ -273,7 +279,6 @@ class LoginView(generics.GenericAPIView):
         input = re.sub(r"'", '&#039;', input)
         return input
 
-
     def validate_length(self, input, field_name, max_length):
         if len(input) > max_length:
             raise ValidationError(f"{field_name} must not exceed {max_length} characters.")
@@ -309,7 +314,8 @@ class LoginView(generics.GenericAPIView):
         sanitized_data['otp'] = self.validate_otp(sanitized_data['otp'])
 
         return sanitized_data
-    
+
+
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -388,7 +394,7 @@ class RegisterView(generics.CreateAPIView):
     @method_decorator(csrf_protect)
     def create(self, request, *args, **kwargs):
         logging.info("Access register")
-        logging_library.log_access_message(request, "Access register","REGISTER")
+        logging_library.log_access_message(request, request.data, "REGISTER")
         try:
             sanitized_data = self.sanitize_and_validate_data(request.data)
         except ValidationError as e:
@@ -432,7 +438,6 @@ class CartItemListCreateView(generics.ListCreateAPIView):
         except Cart.DoesNotExist:
             raise NotFound(detail="Cart not found for the user", code=status.HTTP_404_NOT_FOUND)
 
-
     def get(self, request, *args, **kwargs):
         user = self.get_user_from_token(request)
         cart = self.get_cart_for_user(user)
@@ -440,7 +445,6 @@ class CartItemListCreateView(generics.ListCreateAPIView):
         cart_items = CartItem.objects.filter(cart_id=cart.id)
         serializer = self.get_serializer(cart_items, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
 
     def create(self, request, *args, **kwargs):
         user = self.get_user_from_token(request)
@@ -511,6 +515,7 @@ class CartItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         if not obj:
             raise NotFound(detail="Cart item not found", code=status.HTTP_404_NOT_FOUND)
         return obj
+
     @method_decorator(csrf_protect)
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
@@ -529,6 +534,7 @@ class CartItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         self.perform_update(serializer)
 
         return Response(serializer.data)
+
 
 # User = get_user_model()
 class CartAPIView(generics.RetrieveAPIView):
@@ -597,7 +603,8 @@ class CartAPIView(generics.RetrieveAPIView):
 
         serializer = self.get_serializer(cart)
         return Response(serializer.data)
-    
+
+
 class CheckoutView(generics.CreateAPIView):
     serializer_class = CheckoutSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -607,6 +614,7 @@ class CheckoutView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         order = serializer.save()
         return Response({'message': 'Order completed successfully', 'order_id': order.id})
+
 
 class OrderListView(generics.ListAPIView):
     serializer_class = OrderSerializer
@@ -622,9 +630,11 @@ class ProductDetail(generics.RetrieveAPIView):
     queryset = Product.objects.all().prefetch_related('reviews')  # Ensures reviews are fetched efficiently
     serializer_class = ProductSerializer
 
+
 class ProductList(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
 
 class ProductDeleteView(generics.DestroyAPIView):
     queryset = Product.objects.all()
@@ -650,6 +660,7 @@ class ProductDeleteView(generics.DestroyAPIView):
                 return Response({"message": "Product deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
         except (User.DoesNotExist, IndexError, KeyError):
             raise AuthenticationFailed('Invalid token or user not found')
+
 
 # class ProductUpdateView(generics.UpdateAPIView):
 #     queryset = Product.objects.all()
@@ -691,7 +702,9 @@ class ProductUpdateView(generics.UpdateAPIView):
                         image_file = request.FILES['image']
                         saved_path = default_storage.save(image_file.name, image_file)
                         product.image = saved_path  # Save the path to your image field
-                    logging_library.log_access_message(request,"Product name: " + str(product.name) + "Request info: " + str(request.data), "PRODUCT UPDATE")
+                    logging_library.log_access_message(request,
+                                                       "Product name: " + str(product.name) + "Request info: " + str(
+                                                           request.data), "PRODUCT UPDATE")
                     serializer.save()
                     return Response(serializer.data)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -749,19 +762,18 @@ class ProductCreateView(generics.CreateAPIView):
             raise AuthenticationFailed('Invalid token or user not found')
 
 
-
 class OrganisationListView(generics.ListAPIView):
-   queryset = Organisation.objects.all()
-   serializer_class = OrganisationSerializer
-
+    queryset = Organisation.objects.all()
+    serializer_class = OrganisationSerializer
 
 
 class OrganisationRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-   queryset = Organisation.objects.all()
-   serializer_class = OrganisationSerializer
-   permission_classes = [permissions.IsAuthenticated]
-   authentication_classes = [JWTAuthentication]
-   def put(self, request, *args, **kwargs):
+    queryset = Organisation.objects.all()
+    serializer_class = OrganisationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def put(self, request, *args, **kwargs):
         jwt_authenticator = JWTAuthentication()
         auth_header = request.headers.get('Authorization')
         if not auth_header:
@@ -782,12 +794,14 @@ class OrganisationRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIVie
                         saved_path = default_storage.save(image_file.name, image_file)
                         organisation.image = saved_path  # Save the path to your image field
                     serializer.save()
-                    logging_library.log_access_message(request, "Organisation name: " + str(organisation.name) + " Request info: " +str(request.data) ,"ORGANISATION UPDATE")
+                    logging_library.log_access_message(request, "Organisation name: " + str(
+                        organisation.name) + " Request info: " + str(request.data), "ORGANISATION UPDATE")
                     return Response(serializer.data)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except (User.DoesNotExist, IndexError, KeyError):
             raise AuthenticationFailed('Invalid token or user not found')
-   def delete(self, request, *args, **pk):
+
+    def delete(self, request, *args, **pk):
         jwt_authenticator = JWTAuthentication()
         auth_header = request.headers.get('Authorization')
         if not auth_header:
@@ -806,6 +820,7 @@ class OrganisationRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIVie
         except (User.DoesNotExist, IndexError, KeyError):
             raise AuthenticationFailed('Invalid token or user not found')
 
+
 # class ProductReviewListCreateView(generics.ListCreateAPIView):
 #     queryset = ProductReview.objects.all()
 #     serializer_class = ProductReviewSerializer
@@ -820,7 +835,7 @@ class OrganisationRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIVie
 
 class ProductReviewListCreateView(generics.ListCreateAPIView):
     serializer_class = ProductReviewSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly] 
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
         product_id = self.kwargs['pk']
@@ -835,7 +850,7 @@ class ProductReviewListCreateView(generics.ListCreateAPIView):
 
         #     messages.error(self.request, 'You have already reviewed this product.')
         #     raise ValidationError('You have already reviewed this product.')
-        
+
         serializer.save(user=self.request.user, product=product)
 
 
@@ -848,7 +863,7 @@ class ProductReviewRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIVi
     def put(self, request, *args, **kwargs):
         jwt_authenticator = JWTAuthentication()
         auth_header = request.headers.get('Authorization')
-        
+
         if not auth_header:
             raise AuthenticationFailed('Authorization header is missing')
 
@@ -882,11 +897,11 @@ class ProductReviewRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIVi
 
         except (AuthenticationFailed, IndexError, KeyError) as e:
             return Response({'error': str(e)}, status=status.HTTP_401_UNAUTHORIZED)
-    
+
     def delete(self, request, *args, **kwargs):
         jwt_authenticator = JWTAuthentication()
         auth_header = request.headers.get('Authorization')
-        
+
         if not auth_header:
             raise AuthenticationFailed('Authorization header is missing')
 
@@ -914,7 +929,6 @@ class ProductReviewRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIVi
             return Response({'error': str(e)}, status=status.HTTP_401_UNAUTHORIZED)
 
 
-
 class TwoFactorLoginView(generics.GenericAPIView):
     serializer_class = TwoFactorLoginVerification
 
@@ -928,7 +942,7 @@ class TwoFactorLoginView(generics.GenericAPIView):
         access_token = refresh.access_token
         access_token['is_superuser'] = user.is_superuser
 
-        #check if user has 2FA enabled, if yes then dont allow
+        # check if user has 2FA enabled, if yes then dont allow
         if user.verified_twofactor == 1:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -972,13 +986,15 @@ class TwoFactorSetupView(generics.GenericAPIView):
         user.verified_twofactor = True
         user.save()
         logging_library.log_access_message(request, ' 2FA SETUP', "2FA")
-        return Response( status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK)
+
 
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated]
     queryset = User.objects.all()
     serializer_class = UserSerializer
     authentication_classes = [JWTAuthentication]
+
     def get(self, request, *args, **kwargs):
         jwt_authenticator = JWTAuthentication()
         auth_header = request.headers.get('Authorization')
@@ -997,7 +1013,7 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
 
         except (User.DoesNotExist, IndexError, KeyError):
             raise AuthenticationFailed('Invalid token or user not found')
-    
+
     def delete(self, request, *args, **pk):
         jwt_authenticator = JWTAuthentication()
         auth_header = request.headers.get('Authorization')
@@ -1017,8 +1033,10 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
         except (User.DoesNotExist, IndexError, KeyError):
             raise AuthenticationFailed('Invalid token or user not found')
 
+
 def get_common_passwords(request):
-    file_path = os.path.join(os.path.dirname(__file__), '..', '..', 'frontend', 'src', 'user', 'pages', 'register', '1000-most-common-passwords.txt')
+    file_path = os.path.join(os.path.dirname(__file__), '..', '..', 'frontend', 'src', 'user', 'pages', 'register',
+                             '1000-most-common-passwords.txt')
     with open(file_path, 'r') as file:
         common_passwords = file.read().splitlines()
     return JsonResponse(common_passwords, safe=False)
