@@ -41,16 +41,6 @@ const AdminNavbar = ({ logout }) => {
       <Link to="/" className="logout-link" onClick={handleLogout}>
         Logout
       </Link>
-
-
-      {/* <div className="profile">
-        <GearSix size={36} className="settings-icon" />
-        <div className="admin-options">
-          <button onClick={handleLogout} className="logout-btn">
-            Logout
-          </button>
-        </div>
-      </div> */}
     </div>
   );
 };

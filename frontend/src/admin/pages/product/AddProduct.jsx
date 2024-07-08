@@ -12,7 +12,6 @@ const AddProduct = () => {
         image: null,
         price: '',
         deletedAt: '',
-        // categoryId: '',
         organisationId: ''
     });
  
@@ -20,8 +19,6 @@ const AddProduct = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-
-        // Fetch organisations
         axios.get('https://ict2216group30.store/api/organisations/')
             .then(response => setOrganisations(response.data))
             .catch(error => {});
@@ -29,11 +26,11 @@ const AddProduct = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        const sanitizedValue = DOMPurify.sanitize(value); // Sanitize the value
+        const sanitizedValue = DOMPurify.sanitize(value);
         if (e.target.type === 'file') {
             setProduct(prev => ({ ...prev, [name]: e.target.files[0] }));
         } else {
-            setProduct(prev => ({ ...prev, [name]: sanitizedValue })); // Use sanitizedValue
+            setProduct(prev => ({ ...prev, [name]: sanitizedValue }));
         }
     };
     
@@ -51,18 +48,14 @@ const AddProduct = () => {
             return;
         }
 
-        // FormData to include file uploads
         const formData = new FormData();
         Object.entries(product).forEach(([key, value]) => {
-            // if (key === 'categoryId') key = 'category_id';
             if (key === 'organisationId') key = 'organisation_id';
             const safeValue = typeof value === 'string' ? DOMPurify.sanitize(value) : value;
             formData.append(key, safeValue);
         
         });
 
-
-         // Handle the post request
          axios.post('https://ict2216group30.store/api/products/add/', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -77,7 +70,7 @@ const AddProduct = () => {
                 icon: 'success',
                 showConfirmButton: false,
               });
-            navigate('/admin'); // Redirect on successful add
+            navigate('/admin');
         })
         .catch(error => {
             Swal.fire({

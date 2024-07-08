@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
-import './adminorganisation.css'; // Import the CSS file
+import './adminorganisation.css';
 import Swal from 'sweetalert2';
 
 export const AdminOrganisation = () => {
@@ -29,7 +29,6 @@ export const AdminOrganisation = () => {
 
 
   const handleDelete = (id) => {
-    // Add a confirmation dialog
     if (window.confirm("Are you sure you want to delete this organisation? This process cannot be undone.")) {
       axios.delete(`https://ict2216group30.store/api/organisations/${id}/`, {
         headers: {
@@ -38,7 +37,7 @@ export const AdminOrganisation = () => {
       })
         .then(() => {
           alert('Organisation deleted successfully');
-          fetchData(); // Re-fetch data to update the list after deletion
+          fetchData();
         })
         .catch(error => {
           alert('Failed to delete the organisation');

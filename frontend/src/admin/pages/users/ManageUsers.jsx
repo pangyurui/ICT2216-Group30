@@ -1,7 +1,6 @@
-// src/admin/pages/ManageUsers.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './ManageUsers.css'; // Ensure the CSS file is correctly linked
+import './ManageUsers.css';
 import Swal from 'sweetalert2';
 
 const ManageUsers = () => {
@@ -36,7 +35,6 @@ const ManageUsers = () => {
     };
 
     const handleDelete = (userId) => {
-        // Add a confirmation dialog
         const token = localStorage.getItem('access_token');
         if (window.confirm("Are you sure you want to delete this User? This process cannot be undone.")) {
           axios.delete(`https://ict2216group30.store/api/users/${userId}/`, {

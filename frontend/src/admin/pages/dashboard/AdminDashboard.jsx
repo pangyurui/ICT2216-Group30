@@ -1,5 +1,3 @@
-// In admin dashboard, will handle the products
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -68,8 +66,6 @@ const AdminDashboard = () => {
         <div className="admin-content">
             <div className="admin-header">
                 <h1 className="admin-heading">Products Overview</h1>
-                {/* <button onClick={() => navigate('/admin/product/add-product')}>Go to Add Product</button> */}
-
                 <button onClick={handleAddProductClick} className="admin-add-btn">Add Product</button>
             </div>
             <table className="admin-table">
@@ -79,7 +75,6 @@ const AdminDashboard = () => {
                         <th>NAME</th>
                         <th>DESCRIPTION</th>
                         <th>PRICE</th>
-                        {/* <th>CATEGORY ID</th> */}
                         <th>ORGANISATION ID</th>
                         <th>IMAGE</th>
                         <th>ACTIONS</th>
@@ -92,15 +87,9 @@ const AdminDashboard = () => {
                             <td>{product.name}</td>
                             <td>{product.description}</td>
                             <td>${parseFloat(product.price).toFixed(2)}</td>
-                            {/* <td>{product.category_id || 'No Category'}</td>  */}
                             <td>{product.organisation_id || 'No Organisation'}</td>  
                             <td>
-                                {/* <img src={product.image ? `http://localhost:8000${product.image}` : 'http://via.placeholder.com/150'}
-                                     alt={product.name}
-                                     style={{width: '50px', height: '50px', borderRadius: '50%'}} /> */}
-
                                 <img src={product.image} alt={product.name} style={{ width: '100px', height: '100px' }} />
-
                             </td>
 
                             <td>

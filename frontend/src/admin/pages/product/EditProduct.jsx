@@ -15,13 +15,11 @@ const EditProduct = () => {
         imageName: '',
         existingImageUrl: ''
     });
-    // const [imagePreview, setImagePreview] = useState('');  // State to hold image preview URL
     const [organisations, setOrganisations] = useState([]);
     const { id } = useParams();
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Fetch product details
         axios.get(`https://ict2216group30.store/api/products/${id}/`)
             .then(response => {
                 const data = response.data;
@@ -35,11 +33,8 @@ const EditProduct = () => {
                     imageName: data.image.split('/').pop()
                 
                 });
-                // setImagePreview(response.data.image || '');  // Assuming 'image' is the URL of the image
             })
             .catch(error =>{});
-
-        // Fetch organisations
 
         axios.get(`https://ict2216group30.store/api/organisations/`)
             .then(res => setOrganisations(res.data))
@@ -51,13 +46,6 @@ const EditProduct = () => {
         const { name, value } = e.target;
         setProduct(prev => ({ ...prev, [name]: value }));
     };
-
-    // const handleFileChange = (e) => {
-    //     const file = e.target.files[0];
-    //     if (file) {
-    //         setProduct(prev => ({ ...prev, image: file, imageName: file.name }));
-    //     }
-    // };
     
     const handleFileChange = e => {
         const file = e.target.files[0];
@@ -66,7 +54,7 @@ const EditProduct = () => {
                 ...prev,
                 image: file,
                 imageName: file.name,
-                existingImageUrl: URL.createObjectURL(file) // Update preview to new file
+                existingImageUrl: URL.createObjectURL(file)
             }));
         }
     };
@@ -83,7 +71,6 @@ const EditProduct = () => {
             }
         });
 
-        // Only append the image if a new file was selected
         if (product.image) {
             formData.append('image', product.image, product.image.name);
         }

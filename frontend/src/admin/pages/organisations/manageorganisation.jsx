@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from 'react-router-dom';
-import './adminorganisation.css'; // Import the CSS file
+import './adminorganisation.css';
 import Swal from 'sweetalert2';
 
 export const ManageOrganisation = () => {
@@ -11,7 +11,7 @@ export const ManageOrganisation = () => {
     image: null,
   });
   const navigate = useNavigate();
-  const { id } = useParams(); // Get the ID from the URL
+  const { id } = useParams();
 
   useEffect(() => {
     if (id) {
