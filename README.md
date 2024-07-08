@@ -1,8 +1,5 @@
 # Prerequiste Software
 - MySQL Community Server (https://dev.mysql.com/downloads/mysql/)
-  
-  - Leave everything as default and **set the root user password as 'root'**.
-    
 - MySQL Workbench (https://dev.mysql.com/downloads/workbench/)
 - Node.js (https://nodejs.org/en/download/prebuilt-installer/current)
 
